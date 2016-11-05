@@ -1,8 +1,8 @@
 import copy
 from threading import RLock
 
-from dipy import DiTools
-from dipy.ContextBean import ContextBean
+import DiTools
+from ContextBean import ContextBean
 
 lock = RLock()
 def _StaticSync(fn):
@@ -29,6 +29,7 @@ class StaticContext(object):
         bean = ContextBean()
         bean.name = DiTools.getFullyQualifiedName(clazz)
         bean.object = clazz
+        cls.annotations = DiTools.getBeanMethodsInitializers(clazz)
         cls._beans[bean.name] = bean
 
 def Service():

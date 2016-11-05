@@ -1,6 +1,8 @@
 import unittest
 
-from dipy.DI import InjectClass, ScopeContext
+from dipy.DiTools import getScope
+from dipy.ScopeAnnotations import InjectClass
+from dipy.ScopeContext import ScopeContext
 from dipy.StaticContext import Service, StaticContext
 
 
@@ -18,7 +20,7 @@ class Dependency3(object):
         print "constructor3 called"
 
 
-class FileToolsTest(unittest.TestCase):
+class ScopeContextTest(unittest.TestCase):
 
     def test_LocatorGetInstance(self):
         context = ScopeContext(StaticContext.getBeansCopy())
@@ -26,11 +28,10 @@ class FileToolsTest(unittest.TestCase):
         dep1_n = context.getInstance(Dependency1)
         self.assertEqual(dep1, dep1_n)
 
-    def test_LocatorGetInstance(self):
+    def test_LocatorGetScope(self):
         context = ScopeContext(StaticContext.getBeansCopy())
         dep1 = context.getInstance(Dependency1)
-        dep1_n = context.getInstance(Dependency2)
-        self.assertNotEqual(dep1, dep1_n)
+        self.assertEqual(getScope(dep1), context)
 
     def testInjectClass(self):
         context = ScopeContext(StaticContext.getBeansCopy())
