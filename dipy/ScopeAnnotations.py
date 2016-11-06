@@ -9,7 +9,6 @@ def InjectClass(**kwargs_):
         return cls
     return decorator
 
-
 def PostConstruct():
     """
     method marked by postConstruct will be called on bean initialization
@@ -28,5 +27,4 @@ def PreDestroy():
             self.TTTPreDestroy = fn
         DiTools.beanAnnotateMethod(fn, initAnnotation)
         return fn
-        PreDestroy.init = init
     return decorator
