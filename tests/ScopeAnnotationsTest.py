@@ -1,8 +1,8 @@
 import unittest
 
-from dipy.ScopeAnnotations import PostConstruct
-from dipy.ScopeContext import ScopeContext
-from dipy.StaticContext import Service, StaticContext
+from scopeton.ScopeAnnotations import PostConstruct
+from scopeton.ScopeContext import ScopeContext
+from scopeton.StaticContext import Service, StaticContext
 
 called = []
 @Service()

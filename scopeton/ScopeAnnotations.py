@@ -1,4 +1,4 @@
-from dipy import DiTools
+from scopeton import DiTools
 
 def InjectClass(**kwargs_):
     def decorator(cls):

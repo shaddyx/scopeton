@@ -1,9 +1,9 @@
 import unittest
 
-from dipy.DiTools import getScope
-from dipy.ScopeAnnotations import InjectClass
-from dipy.ScopeContext import ScopeContext
-from dipy.StaticContext import Service, StaticContext
+from scopeton.DiTools import getScope
+from scopeton.ScopeAnnotations import InjectClass
+from scopeton.ScopeContext import ScopeContext
+from scopeton.StaticContext import Service, StaticContext
 
 
 @Service()

@@ -1,8 +1,8 @@
 import unittest
 
-from dipy import DiTools
-from dipy.ScopeAnnotations import PostConstruct, PreDestroy
-from dipy.StaticContext import Service
+from scopeton import DiTools
+from scopeton.ScopeAnnotations import PostConstruct, PreDestroy
+from scopeton.StaticContext import Service
 from package1.testPackageClass import PackageClass
 
 @Service()
