@@ -8,7 +8,13 @@ class ScopeContext(object):
         # type: (dict[str, ContextBean]) -> object
         self.__instances = {}  # type: dict[str, object]
         self.scopeLock = RLock()
-        self.beans = beans
+        self.beans = beans  # type: (dict[str, ContextBean]) -> object
+        self.startServices()
+
+    def startServices(self):
+        for serviceQualifier in self.beans:
+            if not self.beans[serviceQualifier].lazy:
+                self.getInstance(self.beans[serviceQualifier].object)
 
     def resolveClass(self, name):
         # type: (object) -> ContextBean

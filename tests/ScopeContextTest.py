@@ -1,7 +1,7 @@
 import unittest
 
 from scopeton.DiTools import getScope
-from scopeton.ScopeAnnotations import InjectClass
+from scopeton.ScopeAnnotations import InjectClass, PostConstruct
 from scopeton.ScopeContext import ScopeContext
 from scopeton.StaticContext import Service, StaticContext
 
@@ -19,6 +19,20 @@ class Dependency3(object):
     def __init__(self):
         print "constructor3 called"
 
+startedImmediatelly = 0
+@Service(lazy=False)
+class DependStartImmadiatelly(object):
+    @PostConstruct()
+    def init(self):
+        global startedImmediatelly
+        startedImmediatelly += 1
+        print "started immediatelly"
+
+@Service(lazy=True)
+class DependNotStartImmadiatelly(object):
+    @PostConstruct()
+    def init(self):
+        raise Exception("Need not to start immediatelly")
 
 class ScopeContextTest(unittest.TestCase):
 
@@ -38,6 +52,11 @@ class ScopeContextTest(unittest.TestCase):
         dep3 = context.getInstance(Dependency3)
         self.assertTrue(isinstance(dep3.dep1, Dependency1))
         self.assertTrue(isinstance(dep3.dep2, Dependency2))
+
+    def testStartImmediatelly(self):
+        context = ScopeContext(StaticContext.getBeansCopy())
+        self.assertNotEqual(0, startedImmediatelly)
+        #self.assertTrue(isinstance(dep3.dep2, Dependency2))
 
 if __name__ == "__main__":
     unittest.main()

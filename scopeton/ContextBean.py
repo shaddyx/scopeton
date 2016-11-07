@@ -3,3 +3,4 @@ class ContextBean(object):
     object = None  # type: object
     postConstruct = None
     preDestroy = None
+    lazy = False

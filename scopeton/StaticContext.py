@@ -24,16 +24,17 @@ class StaticContext(object):
 
     @classmethod
     @_StaticSync
-    def registerBean(cls, clazz):
+    def registerBean(cls, clazz, lazy = True):
         # type: (str, ContextBean) -> object
         bean = ContextBean()
+        bean.lazy = lazy
         bean.name = DiTools.getFullyQualifiedName(clazz)
         bean.object = clazz
         cls.annotations = DiTools.getBeanMethodsInitializers(clazz)
         cls._beans[bean.name] = bean
 
-def Service():
+def Service(lazy = True):
     def decorator(cls):
-        StaticContext.registerBean(cls)
+        StaticContext.registerBean(cls, lazy=lazy)
         return cls
     return decorator
