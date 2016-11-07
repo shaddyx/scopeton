@@ -37,11 +37,13 @@ def getObjectPackage(obj):
     """returns object package"""
     if type(obj) is str:
         return obj
-    # mod = sys.modules[obj.__module__]
-    # dir = os.path.dirname(mod.__file__)
+    if not hasattr(obj, "__module__"):
+        if type(obj).__name__ == 'module':
+            possibleError = "Type to inject is module, mb you imported/injected module instead of class: {obj}".format(obj=obj)
+        else:
+            possibleError = "unknown"
 
-    # print "modulepath:" + str(obj.__module__)
-    # print "path:" + os.path.dirname(sys.argv[0])
+        raise Exception("Error, object has no attribute __module__:{obj}, type:{type}, possible error:{possibleError}".format(obj=obj, type=type(obj), possibleError = possibleError))
     return obj.__module__
 
 

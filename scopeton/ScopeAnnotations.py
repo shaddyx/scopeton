@@ -3,8 +3,12 @@ from scopeton import DiTools
 def InjectClass(**kwargs_):
     def decorator(cls):
         def inject(self):
-            for name in kwargs_:
-                setattr(self, name, self.TTTcontextScope.getInstance(kwargs_[name]))
+                for name in kwargs_:
+                    try:
+                        setattr(self, name, self.TTTcontextScope.getInstance(kwargs_[name]))
+                    except Exception as e:
+                        raise Exception("Error while injecting {name} into {cls}, type is: {obj}".format(name=name, cls = cls, obj = kwargs_[name]), e)
+
         cls.TTTinjectMethod = inject
         return cls
     return decorator
