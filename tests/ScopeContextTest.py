@@ -57,6 +57,11 @@ class ScopeContextTest(unittest.TestCase):
         context = ScopeContext(StaticContext.getBeansCopy())
         self.assertNotEqual(0, startedImmediatelly)
         #self.assertTrue(isinstance(dep3.dep2, Dependency2))
+    def testStartImmediatelly(self):
+        oldStarted = startedImmediatelly
+        context = ScopeContext(StaticContext.getBeansCopy(), servicesAutoStart=False)
+        self.assertEqual(oldStarted, startedImmediatelly)
+        #self.assertTrue(isinstance(dep3.dep2, Dependency2))
 
 if __name__ == "__main__":
     unittest.main()

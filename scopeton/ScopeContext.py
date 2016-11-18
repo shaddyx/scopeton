@@ -4,12 +4,13 @@ import DiTools
 from ContextBean import ContextBean
 
 class ScopeContext(object):
-    def __init__(self, beans):
-        # type: (dict[str, ContextBean]) -> object
+    def __init__(self, beans, servicesAutoStart=True):
+        # type: (dict[str, ContextBean], boolean) -> object
         self.__instances = {}  # type: dict[str, object]
         self.scopeLock = RLock()
         self.beans = beans  # type: (dict[str, ContextBean]) -> object
-        self.startServices()
+        if servicesAutoStart:
+            self.startServices()
 
     def startServices(self):
         for serviceQualifier in self.beans:

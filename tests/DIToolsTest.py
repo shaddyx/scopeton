@@ -44,12 +44,6 @@ class DIToolsTest(unittest.TestCase):
     def testGetAnnotatedMethods(self):
         self.assertTrue(Dependency2.method1 in DiTools.getBeanMethodsInitializers(Dependency2))
 
-    # def testGetMethodsByAnnotation(self):
-    #     self.assertTrue(Dependency2.method1 in DiTools.getMethodsByAnnotation(Dependency2, PostConstruct))
-    #     self.assertFalse(Dependency2.method2 in DiTools.getMethodsByAnnotation(Dependency2, PostConstruct))
-    #     self.assertEqual(0, len(DiTools.getMethodsByAnnotation(Dependency2, PreDestroy)))
-
-
 
 if __name__ == "__main__":
     unittest.main()
