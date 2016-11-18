@@ -2,6 +2,8 @@ import inspect
 import new
 from threading import RLock
 
+from ContextBean import ContextBean
+
 cacheLock = RLock()
 def getSimpleNameFromString(obj):
     return obj.split(".")[-1]
@@ -60,6 +62,8 @@ def __getFullyQualifiedNameInner(obj):
 def getFullyQualifiedName(obj):
     # type: (object) -> str
     """returns class name with package"""
+    if type(obj) is str:
+        return obj
     cacheLock.acquire()
     try:
         if not hasattr(obj, "__fullyQualifiedClassName"):
@@ -102,3 +106,10 @@ def getBeanMethodsInitializers(clazz):
         return methods
     finally:
         cacheLock.release()
+
+def createBean(clazz, lazy=True):
+    bean = ContextBean()
+    bean.lazy = lazy
+    bean.name = getFullyQualifiedName(clazz)
+    bean.object = clazz
+    return bean

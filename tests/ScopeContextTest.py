@@ -34,6 +34,11 @@ class DependNotStartImmadiatelly(object):
     def init(self):
         raise Exception("Need not to start immediatelly")
 
+class DependNotStartImmadiatelly_overload(object):
+    @PostConstruct()
+    def init(self):
+        print "Overloading ok"
+
 class ScopeContextTest(unittest.TestCase):
 
     def test_LocatorGetInstance(self):
@@ -56,12 +61,25 @@ class ScopeContextTest(unittest.TestCase):
     def testStartImmediatelly(self):
         context = ScopeContext(StaticContext.getBeansCopy())
         self.assertNotEqual(0, startedImmediatelly)
-        #self.assertTrue(isinstance(dep3.dep2, Dependency2))
+
     def testStartImmediatelly(self):
         oldStarted = startedImmediatelly
         context = ScopeContext(StaticContext.getBeansCopy(), servicesAutoStart=False)
         self.assertEqual(oldStarted, startedImmediatelly)
-        #self.assertTrue(isinstance(dep3.dep2, Dependency2))
+
+    def testRegisterInstance(self):
+        context = ScopeContext(StaticContext.getBeansCopy(), servicesAutoStart=False)
+        instance = DependNotStartImmadiatelly_overload()
+        context.registerInstance(DependNotStartImmadiatelly, instance)
+        self.assertEqual(context.getInstance(DependNotStartImmadiatelly), instance)
+
+
+    def testRegisterBean(self):
+        context = ScopeContext(StaticContext.getBeansCopy(), servicesAutoStart=False)
+        context.registerBean(DependNotStartImmadiatelly, DependNotStartImmadiatelly_overload)
+        self.assertTrue(isinstance(context.getInstance(DependNotStartImmadiatelly), DependNotStartImmadiatelly_overload))
+
+
 
 if __name__ == "__main__":
     unittest.main()

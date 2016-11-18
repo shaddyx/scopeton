@@ -24,17 +24,26 @@ class ScopeContext(object):
             raise Exception("Error, no class with name {pkg} registered, available:{keys}".format(pkg=pkg, keys=self.beans.keys()))
         return self.beans[pkg]
 
-    def _makeInstance(self, cls):
-        # type: (ContextBean) -> object
-        instance = cls.object()
+    def __initInstance(self, instance):
         instance.TTTcontextScope = self
         if hasattr(instance, "TTTinjectMethod"):
             instance.TTTinjectMethod()
-        annotatedMethods = DiTools.getBeanMethodsInitializers(cls.object)
+        annotatedMethods = DiTools.getBeanMethodsInitializers(instance.__class__)
         for method in annotatedMethods:
             for annorarionInitFunction in annotatedMethods[method]:
                 annorarionInitFunction(instance)
         return instance
+
+    def _makeInstance(self, cls):
+        # type: (ContextBean) -> object
+        return self.__initInstance(cls.object())
+
+    def registerInstance(self, name, instance):
+        self.__instances[DiTools.getFullyQualifiedName(name)] = instance
+        return self.__initInstance(instance)
+
+    def registerBean(self, name, cls):
+        self.beans[DiTools.getFullyQualifiedName(name)] = DiTools.createBean(cls)
 
     def getInstance(self, obj):
         name = DiTools.getFullyQualifiedName(obj)
@@ -54,7 +63,6 @@ class ScopeContext(object):
             instance.TTTPreDestroy()
 
     def destroy(self):
-        self.scopeLock = RLock()
         self.scopeLock.acquire()
         try:
             for name in self.__instances:
