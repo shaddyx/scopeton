@@ -16,7 +16,7 @@ def __getSimpleClassNameFromObjectInner(obj):
         return getSimpleNameFromString(obj.__name__)
     elif tp is str:
         return obj
-    elif tp is new.instance or (hasattr("__class__") and obj.__class__.hasattr("__name__")):
+    elif tp is new.instance or (hasattr(obj, "__class__") and hasattr(obj.__class__, "__name__")):
         return getSimpleNameFromString(obj.__class__.__name__)
     raise Exception("Cannot get className for object:" + str(type(obj)))
 
