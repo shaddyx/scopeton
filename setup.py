@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'scopeton',
   packages = ['scopeton'],
-  version = '0.141',
+  version = '0.15',
   description = 'Dependency injection mechanism',
   author = 'Anatolii Yakushko',
   author_email = 'shaddyx@gmail.com',

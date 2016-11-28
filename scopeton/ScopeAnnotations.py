@@ -1,4 +1,8 @@
+import traceback
+
 from scopeton import DiTools
+from scopeton.scopetonException import ScopetonException
+
 
 def InjectClass(**kwargs_):
     def decorator(cls):
@@ -7,7 +11,7 @@ def InjectClass(**kwargs_):
                     try:
                         setattr(self, name, self.TTTcontextScope.getInstance(kwargs_[name]))
                     except Exception as e:
-                        raise Exception("Error while injecting {name} into {cls}, type is: {obj}".format(name=name, cls = cls, obj = kwargs_[name]), e)
+                        raise ScopetonException("Error while injecting {name} into {cls}, type is: {obj}, nested exception: {err}".format(name=name, cls = cls, obj = kwargs_[name], err=traceback.format_exc()), e)
 
         cls.TTTinjectMethod = inject
         return cls
