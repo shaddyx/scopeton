@@ -1,5 +1,4 @@
 import inspect
-import new
 from threading import RLock
 
 from ContextBean import ContextBean
@@ -12,11 +11,11 @@ def __getSimpleClassNameFromObjectInner(obj):
     """returns class name (without package for given object)"""
     # type: (object) -> str
     tp = type(obj)
-    if tp is new.classobj or tp is type:
+    if tp is inspect.isclass(obj) or tp is type:
         return getSimpleNameFromString(obj.__name__)
     elif tp is str:
         return obj
-    elif tp is new.instance or (hasattr(obj, "__class__") and hasattr(obj.__class__, "__name__")):
+    elif (hasattr(obj, "__class__") and hasattr(obj.__class__, "__name__")):
         return getSimpleNameFromString(obj.__class__.__name__)
     raise Exception("Cannot get className for object:" + str(type(obj)))
 
