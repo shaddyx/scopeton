@@ -1,8 +1,8 @@
 import copy
 from threading import RLock
 
-import DiTools
-from ContextBean import ContextBean
+import scopeton.DiTools as DiTools
+from scopeton.ContextBean import ContextBean
 
 lock = RLock()
 def _StaticSync(fn):

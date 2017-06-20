@@ -1,7 +1,8 @@
 import inspect
 from threading import RLock
+import sys
 
-from ContextBean import ContextBean
+from scopeton.ContextBean import ContextBean
 
 cacheLock = RLock()
 def getSimpleNameFromString(obj):
@@ -11,7 +12,9 @@ def __getSimpleClassNameFromObjectInner(obj):
     """returns class name (without package for given object)"""
     # type: (object) -> str
     tp = type(obj)
-    if tp is inspect.isclass(obj) or tp is type:
+    if tp.__name__ == 'classobj':
+         return getSimpleNameFromString(obj.__name__)
+    elif tp is inspect.isclass(obj) or tp is type:
         return getSimpleNameFromString(obj.__name__)
     elif tp is str:
         return obj
@@ -78,7 +81,14 @@ def getScope(scopeHolder):
 
 def getClassMethods(cls):
     # type: (object) -> list[object]
-    return map(lambda meth: meth[1], inspect.getmembers(cls, predicate=inspect.ismethod))
+    if sys.version_info[0] > 2:
+        methods = inspect.getmembers(cls, predicate=inspect.ismethod)
+        print(list(methods))
+        methods = map(lambda meth: meth[1], methods)
+        print(list(methods))
+        return list(methods)
+    else:
+        return map(lambda meth: meth[1], inspect.getmembers(cls, predicate=inspect.ismethod))
 
 def beanAnnotateMethod(method, annotation):
     cacheLock.acquire()
