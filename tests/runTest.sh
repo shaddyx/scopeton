@@ -1,3 +1,3 @@
 #!/bin/sh
 export PYTHONPATH=$PYTHONPATH:../
-python $1
+python3 $1

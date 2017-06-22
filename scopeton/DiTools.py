@@ -82,10 +82,8 @@ def getScope(scopeHolder):
 def getClassMethods(cls):
     # type: (object) -> list[object]
     if sys.version_info[0] > 2:
-        methods = inspect.getmembers(cls, predicate=inspect.ismethod)
-        print(list(methods))
+        methods = inspect.getmembers(cls, predicate=inspect.ismethod) + inspect.getmembers(cls, predicate=inspect.isfunction)
         methods = map(lambda meth: meth[1], methods)
-        print(list(methods))
         return list(methods)
     else:
         return map(lambda meth: meth[1], inspect.getmembers(cls, predicate=inspect.ismethod))
