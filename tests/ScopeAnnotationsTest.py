@@ -19,6 +19,7 @@ class Dependencyz2(object):
     @PostConstruct()
     def init(self):
         called.append(self)
+
 class ScopeAnnotationsTest(unittest.TestCase):
 
     def test_PostConstruct(self):

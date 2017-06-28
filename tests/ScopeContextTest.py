@@ -13,7 +13,7 @@ class Dependency1(object):
 class Dependency2(object):
     pass
 
-@InjectClass(dep2=Dependency2, dep1=Dependency1)
+@InjectClass(dep2=Dependency2, dep1=Dependency1, dep3="TestQualifier")
 @Service()
 class Dependency3(object):
     def __init__(self):
@@ -39,6 +39,11 @@ class DependNotStartImmadiatelly_overload(object):
     def init(self):
         print ("Overloading ok")
 
+@Service(name="TestQualifier")
+class TestQualifierTest(object):
+    pass
+
+
 class ScopeContextTest(unittest.TestCase):
 
     def test_LocatorGetInstance(self):
@@ -57,6 +62,8 @@ class ScopeContextTest(unittest.TestCase):
         dep3 = context.getInstance(Dependency3)
         self.assertTrue(isinstance(dep3.dep1, Dependency1))
         self.assertTrue(isinstance(dep3.dep2, Dependency2))
+        self.assertTrue(isinstance(dep3.dep3, TestQualifierTest))
+
 
     def testStartImmediatelly(self):
         context = ScopeContext(StaticContext.getBeansCopy())
