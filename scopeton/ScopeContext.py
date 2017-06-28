@@ -24,14 +24,16 @@ class ScopeContext(object):
             raise Exception("Error, no class with name {pkg} registered, available:{keys}".format(pkg=pkg, keys=self.beans.keys()))
         return self.beans[pkg]
 
-    def __initInstance(self, instance):
-        instance.TTTcontextScope = self
+    def __inject(self, instance):
         if hasattr(instance, "TTTinjectMethod"):
             instance.TTTinjectMethod()
+
+    def __initInstance(self, instance):
+        instance.TTTcontextScope = self
         annotatedMethods = DiTools.getBeanMethodsInitializers(instance.__class__)
         for method in annotatedMethods:
-            for annorarionInitFunction in annotatedMethods[method]:
-                annorarionInitFunction(instance)
+            for annotationInitFunction in annotatedMethods[method]:
+                annotationInitFunction(instance)
         return instance
 
     def _makeInstance(self, cls):
@@ -54,6 +56,7 @@ class ScopeContext(object):
         try:
             if name not in self.__instances:
                 self.__instances[name] = self._makeInstance(cls)
+                self.__inject(self.__instances[name])
         finally:
             self.scopeLock.release()
         return self.__instances[name]
