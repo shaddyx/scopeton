@@ -23,7 +23,7 @@ class ScopeAnnotationsTest(unittest.TestCase):
 
     def test_PostConstruct(self):
         context = ScopeContext(StaticContext.getBeansCopy())
-        print "OK"
+        print ("OK")
         dep1 = context.getInstance(Dependencyz1)
         self.assertTrue(dep1 in called)
         dep1_n = context.getInstance(Dependencyz2)

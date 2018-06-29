@@ -17,7 +17,7 @@ class Dependency2(object):
 @Service()
 class Dependency3(object):
     def __init__(self):
-        print "constructor3 called"
+        print ("constructor3 called")
 
 startedImmediatelly = 0
 @Service(lazy=False)
@@ -26,7 +26,7 @@ class DependStartImmadiatelly(object):
     def init(self):
         global startedImmediatelly
         startedImmediatelly += 1
-        print "started immediatelly"
+        print ("started immediatelly")
 
 @Service(lazy=True)
 class DependNotStartImmadiatelly(object):
@@ -37,7 +37,7 @@ class DependNotStartImmadiatelly(object):
 class DependNotStartImmadiatelly_overload(object):
     @PostConstruct()
     def init(self):
-        print "Overloading ok"
+        print ("Overloading ok")
 
 class ScopeContextTest(unittest.TestCase):
 
