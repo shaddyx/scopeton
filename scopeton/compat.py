@@ -20,3 +20,10 @@ def objectIsInstance(obj):
     else:
         import inspect
         return inspect.isclass(obj)
+
+
+def getMethodSignature(method):
+    if isPython3():
+        return inspect.getfullargspec(method)
+    else:
+        return inspect.getargspec(method)
