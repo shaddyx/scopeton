@@ -2,7 +2,7 @@ import logging
 from threading import RLock
 
 from scopeton.bean import Bean
-from scopeton.scopeTools import getBeanName
+from scopeton.scopeTools import getBeanName, callMethodByName
 
 
 class Scope(object):
@@ -51,3 +51,9 @@ class Scope(object):
         """
         logging.debug("Registering:" + getBeanName(bean))
         self._beans[getBeanName(bean)] = bean
+
+    def runServices(self):
+        for k in self._beans:
+            bean = self._beans[k]
+            if bean.service:
+                callMethodByName(self.getInstance(bean), self.initMethod)
