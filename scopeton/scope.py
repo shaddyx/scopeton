@@ -9,12 +9,13 @@ from scopeton.scopeTools import getBeanName, callMethodByName
 
 class Scope(object):
     '''this is servicelocator pattern implementation'''
-    def __init__(self, lock=False, initMethod="postConstruct", destroyMethod="preDestroy"):
+    def __init__(self, lock=False, initMethod="postConstruct", destroyMethod="preDestroy", parent=None):
         self._singletons = {}  # type: dict[str, Bean]
         self._beans = {}       # type: dict[str, Bean]
         self.lock = lock       # type: RLock
         self.initMethod = initMethod
         self.destroyMethod = destroyMethod
+        self.parent = parent
 
     def getInstance(self, name):
         if self.lock:
