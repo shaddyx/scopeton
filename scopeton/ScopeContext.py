@@ -1,7 +1,7 @@
 from threading import RLock
 
-import DiTools
-from ContextBean import ContextBean
+import scopeton.DiTools as DiTools
+from scopeton.ContextBean import ContextBean
 
 class ScopeContext(object):
     def __init__(self, beans, servicesAutoStart=True):
