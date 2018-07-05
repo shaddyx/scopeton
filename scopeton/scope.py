@@ -15,7 +15,7 @@ class Scope(object):
         self.lock = lock       # type: RLock
         self.initMethod = initMethod
         self.destroyMethod = destroyMethod
-        self.parent = parent
+        self.parent = parent    #type: Scope
 
     def getInstance(self, name):
         if self.lock:
