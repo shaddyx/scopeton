@@ -1,8 +1,8 @@
 import copy
 from threading import RLock
 
-import DiTools
-from ContextBean import ContextBean
+import scopeton.DiTools
+from scopeton.ContextBean import ContextBean
 
 lock = RLock()
 def _StaticSync(fn):
@@ -26,7 +26,7 @@ class StaticContext(object):
     @_StaticSync
     def registerBean(cls, clazz, lazy = True):
         # type: (str, ContextBean) -> object
-        bean = DiTools.createBean(clazz, lazy=lazy)
+        bean = scopeton.DiTools.createBean(clazz, lazy=lazy)
         cls._beans[bean.name] = bean
 
 def Service(lazy = True):

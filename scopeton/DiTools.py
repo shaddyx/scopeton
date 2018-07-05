@@ -1,22 +1,66 @@
 import inspect
-import new
-from threading import RLock
 
-from ContextBean import ContextBean
+from threading import RLock
+import sys
+from scopeton.ContextBean import ContextBean
 
 cacheLock = RLock()
 def getSimpleNameFromString(obj):
     return obj.split(".")[-1]
 
+def isPython3():
+    return sys.version_info.major > 2
+
+def getMethodKey(method):
+    return method.__name__
+
+def isClass(obj):
+    if not isPython3():
+        import new
+        return type(obj) is new.classobj or type(obj) is type
+    else:
+        import inspect
+        return inspect.isclass(obj)
+
+def isinstance(obj):
+    if not isPython3():
+        import new
+        return type(obj) is new.instance or (hasattr(obj, "__class__") and hasattr(obj.__class__, "__name__"))
+    else:
+        import inspect
+        return inspect.isclass(obj)
+
+def getMethodClass(meth):
+    if not hasattr(meth, "__self__"):
+        if isPython3():
+            method_name = meth.__name__
+            if meth.__self__:
+                classes = [meth.__self__.__class__]
+            else:
+                # unbound method
+                classes = [meth.im_class]
+            while classes:
+                c = classes.pop()
+                if method_name in c.__dict__:
+                    return c
+                else:
+                    classes = list(c.__bases__) + classes
+        else:
+            for cls in inspect.getmro(meth.im_class):
+                if meth.__name__ in cls.__dict__:
+                    return cls
+    return meth.__self__.__class__
+
+
 def __getSimpleClassNameFromObjectInner(obj):
     """returns class name (without package for given object)"""
     # type: (object) -> str
     tp = type(obj)
-    if tp is new.classobj or tp is type:
+    if isClass(tp):
         return getSimpleNameFromString(obj.__name__)
     elif tp is str:
         return obj
-    elif tp is new.instance or (hasattr(obj, "__class__") and hasattr(obj.__class__, "__name__")):
+    elif isinstance(obj):
         return getSimpleNameFromString(obj.__class__.__name__)
     raise Exception("Cannot get className for object:" + str(type(obj)))
 
@@ -79,16 +123,27 @@ def getScope(scopeHolder):
 
 def getClassMethods(cls):
     # type: (object) -> list[object]
-    return map(lambda meth: meth[1], inspect.getmembers(cls, predicate=inspect.ismethod))
+    return list(map(lambda meth: meth[1], inspect.getmembers(cls, predicate=inspect.ismethod)))
+
+def getMethodAnnotations(method):
+    clz = getMethodClass(method)
+    cacheLock.acquire()
+    try:
+        if not hasattr(clz, "TTTannotations"):
+            clz.TTTannotations = {}
+        if method not in clz.TTTannotations:
+            clz.TTTannotations[getMethodKey(method)] = []
+            return clz.TTTannotations[getMethodKey(method)]
+    finally:
+        cacheLock.release()
 
 def beanAnnotateMethod(method, annotation):
     cacheLock.acquire()
+    annotations = getMethodAnnotations(method)
     try:
-        if not hasattr(method, "TTTannotations"):
-            method.TTTannotations = []
-        if annotation in method.TTTannotations:
+        if annotation in annotations:
             raise Exception("Error, method: {methodName} already has annotation: {annotationName}".format(methodName=method.__name__,annotationName=annotation.__name__))
-        method.TTTannotations.append(annotation)
+        annotations[method].append(annotation)
     finally:
         cacheLock.release()
 
@@ -100,8 +155,8 @@ def getBeanMethodsInitializers(clazz):
             return clazz.__annotatedMethods
         methods = {}
         for method in getClassMethods(clazz):
-            if hasattr(method, "TTTannotations"):
-                methods[method] = method.TTTannotations
+            if hasattr(clazz, "TTTannotations"):
+                methods[method] = clazz.TTTannotations[getMethodKey(method)]
         clazz.__annotatedMethods = methods
         return methods
     finally:
