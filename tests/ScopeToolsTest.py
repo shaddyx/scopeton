@@ -1,7 +1,7 @@
 import unittest
 
 from scopeton import scope
-from scopeton.bean import Bean
+from scopeton.objects import Bean
 from scopeton.scopeTools import getBeanName, callMethodByName
 
 

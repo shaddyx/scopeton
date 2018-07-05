@@ -1,10 +1,14 @@
 import unittest
 
 from scopeton import scope
-from scopeton.bean import Bean
+from scopeton.objects import Bean
 
 
 class Dependency2(object):
+    def __init__(self, context):
+        self.context = context
+        self.dep3 = context.getInstance(Dependency3)
+
     called = False
     def postConstruct(self):
         print("PostConstruct called")
@@ -37,6 +41,7 @@ class ScopeTest(unittest.TestCase):
         appScope.runServices()
         self.assertTrue(isinstance(dep3, Dependency3))
         self.assertEqual(dep3, dep3_single)
+        self.assertEqual(dep2.dep3, dep3_single)
         self.assertTrue(isinstance(dep2, Dependency2))
         self.assertTrue(dep2.called)
 

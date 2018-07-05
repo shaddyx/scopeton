@@ -3,7 +3,7 @@ import logging
 from threading import RLock
 
 from scopeton import compat
-from scopeton.bean import Bean
+from scopeton.objects import Bean
 from scopeton.scopeTools import getBeanName, callMethodByName
 
 
@@ -33,7 +33,7 @@ class Scope(object):
             raise Exception("Error, no such bean:" + str(name))
 
         bean = self._beans[name]
-        if len(compat.getMethodSignature(bean.__init__).args) == 2:
+        if len(compat.getMethodSignature(bean.cls.__init__).args) == 2:
             instance = bean.cls(self)
         else:
             instance = bean.cls()

@@ -1,7 +1,7 @@
 def getBeanName(cls):
     if isinstance(cls, str):
         return cls
-    from scopeton.bean import Bean
+    from scopeton.objects import Bean
     if isinstance(cls, Bean):
         return cls.name
     return cls.__name__
