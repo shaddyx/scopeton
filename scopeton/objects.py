@@ -9,7 +9,7 @@ class Bean(object):
 
     def __init__(self, cls, name=None, lazy = False, singleton=True, service = True):
         self.cls = cls
-        self.name = name or getBeanName(cls)
+        self.name = getBeanName(name) if name else getBeanName(cls)
         self.lazy = lazy
         self.singleton = singleton
         self.service = service

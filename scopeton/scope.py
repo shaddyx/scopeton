@@ -4,7 +4,7 @@ from threading import RLock
 
 from scopeton import compat
 from scopeton.objects import Bean
-from scopeton.scopeTools import getBeanName, callMethodByName
+from scopeton.scopeTools import getBeanName, callMethodByName, ScopetonException
 
 
 class Scope(object):
@@ -56,7 +56,10 @@ class Scope(object):
         """
         :type bean: Bean
         """
-        logging.debug("Registering:" + getBeanName(bean))
+        name = getBeanName(bean)
+        logging.debug("Registering:" + name)
+        if name in self._beans:
+            raise ScopetonException("Error, bean with name {} already registered".format(name))
         self._beans[getBeanName(bean)] = bean
 
     def runServices(self):

@@ -2,6 +2,7 @@ import unittest
 
 from scopeton import scope
 from scopeton.objects import Bean
+from scopeton.scopeTools import ScopetonException
 
 
 class Dependency2(object):
@@ -30,6 +31,9 @@ class Dependency3(object):
         print("test called")
 
 
+class Dependency4(object):
+    pass
+
 class ScopeTest(unittest.TestCase):
 
     def test_RegisterAndGetInstance(self):
@@ -44,6 +48,29 @@ class ScopeTest(unittest.TestCase):
         self.assertEqual(dep2.dep3, dep3_single)
         self.assertTrue(isinstance(dep2, Dependency2))
         self.assertTrue(dep2.called)
+
+
+    def test_RegisterAndGetInstanceCustomNames(self):
+        appScope = scope.Scope()
+        appScope.registerBean(Bean(Dependency4, name=Dependency3), Bean(Dependency4, name="aaa"))
+
+        dep2 = appScope.getInstance(Dependency3)  # type: Dependency4
+        dep3 = appScope.getInstance("aaa")
+        self.assertNotEqual(dep2, dep3)
+        self.assertEqual(dep2.__class__, dep3.__class__)
+
+
+    def test_RegisterAndGetErrorSameNames(self):
+
+        appScope = scope.Scope()
+        try:
+            appScope.registerBean(Bean(Dependency2, name=Dependency3), Bean(Dependency3))
+            self.fail("Exception must thrown")
+        except ScopetonException as e:
+            pass
+
+
+
 
 if __name__ == "__main__":
     unittest.main()
