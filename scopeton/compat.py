@@ -1,6 +1,9 @@
 import inspect
 import sys
 
+class _Python2NativeArgs:
+    args = ['self']
+
 def isPython3():
     return sys.version_info.major >= 3
 
@@ -26,4 +29,7 @@ def getMethodSignature(method):
     if isPython3():
         return inspect.getfullargspec(method)
     else:
-        return inspect.getargspec(method)
+        try:
+            return inspect.getargspec(method)
+        except TypeError:
+            return _Python2NativeArgs()

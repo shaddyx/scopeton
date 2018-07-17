@@ -13,5 +13,6 @@ def callMethodByName(obj, name, *args, **kwargs):
 
 
 class ScopetonException(Exception):
-    def __init__(self, *args: object, **kwargs: object) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+
+        super(Exception, self).__init__(*args, **kwargs)

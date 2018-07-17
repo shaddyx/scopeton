@@ -15,9 +15,8 @@ class Dependency3(object):
 class CompatTest(unittest.TestCase):
 
     def test_GetMethodClass(self):
-        pass
-        #res = compat.getMethodClass(Dependency3.test)
-        #self.assertEqual(res, Dependency3)
+        compat.getMethodSignature(Dependency3.__init__)
+
 
 
 if __name__ == "__main__":
