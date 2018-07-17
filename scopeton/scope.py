@@ -50,6 +50,8 @@ class Scope(object):
             self.lock.acquire()
         try:
             for bean in args:
+                if not isinstance(bean, Bean):
+                    bean = Bean(bean)
                 self._registerBean(bean)
         finally:
             if self.lock: self.lock.release()
