@@ -38,10 +38,12 @@ class Scope(object):
             instance = bean.cls(self)
         else:
             instance = bean.cls()
-
         if bean.singleton:
-            self._singletons[name] = instance
+            self.registerInstance(name, instance)
         return instance
+
+    def registerInstance(self, name, instance):
+        self._singletons[name] = instance
 
     def registerBean(self, *args):
         if self.lock:
@@ -58,7 +60,7 @@ class Scope(object):
         """
         name = getBeanName(bean)
         logging.debug("Registering:" + name)
-        if name in self._beans:
+        if bean.checkRegistered and name in self._beans:
             raise ScopetonException("Error, bean with name {} already registered".format(name))
         self._beans[getBeanName(bean)] = bean
 

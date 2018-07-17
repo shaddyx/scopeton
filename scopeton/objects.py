@@ -7,7 +7,8 @@ class Bean(object):
     lazy = False
     singleton = True
 
-    def __init__(self, cls, name=None, lazy = False, singleton=True, service = True):
+    def __init__(self, cls, name=None, lazy = False, singleton=True, service = True, checkRegistered = True):
+        self.checkRegistered = True
         self.cls = cls
         self.name = getBeanName(name) if name else getBeanName(cls)
         self.lazy = lazy
