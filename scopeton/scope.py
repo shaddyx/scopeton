@@ -9,10 +9,11 @@ from scopeton.scopeTools import getBeanName, callMethodByName, ScopetonException
 
 class Scope(object):
     '''this is servicelocator pattern implementation'''
-    def __init__(self, lock=False, initMethod="postConstruct", destroyMethod="preDestroy", parent=None):
+    def __init__(self, lock=False, initMethod="postConstruct", destroyMethod="preDestroy", parent=None, allowDuplicates=False):
         self._singletons = {}  # type: dict[str, Bean]
         self._beans = {}       # type: dict[str, Bean]
         self.lock = lock       # type: RLock
+        self.allowDuplicates = allowDuplicates
         self.initMethod = initMethod
         self.destroyMethod = destroyMethod
         self.parent = parent    #type: Scope
@@ -62,7 +63,7 @@ class Scope(object):
         """
         name = getBeanName(bean)
         logging.debug("Registering:" + name)
-        if bean.checkRegistered and name in self._beans:
+        if not self.allowDuplicates and bean.checkRegistered and name in self._beans:
             raise ScopetonException("Error, bean with name {} already registered".format(name))
         self._beans[getBeanName(bean)] = bean
 
