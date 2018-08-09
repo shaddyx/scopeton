@@ -6,7 +6,6 @@ def getBeanName(cls):
         return cls.name
     return cls.__name__
 
-
 def callMethodByName(obj, name, *args, **kwargs):
     if hasattr(obj, name):
         return getattr(obj, name)(*args, **kwargs)

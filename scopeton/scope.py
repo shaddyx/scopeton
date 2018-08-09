@@ -44,7 +44,7 @@ class Scope(object):
         return instance
 
     def registerInstance(self, name, instance):
-        self._singletons[name] = instance
+        self._singletons[getBeanName(name)] = instance
 
     def registerBean(self, *args):
         if self.lock:
@@ -55,7 +55,8 @@ class Scope(object):
                     bean = Bean(bean)
                 self._registerBean(bean)
         finally:
-            if self.lock: self.lock.release()
+            if self.lock:
+                self.lock.release()
 
     def _registerBean(self, bean):
         """
