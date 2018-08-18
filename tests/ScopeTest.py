@@ -60,17 +60,5 @@ class ScopeTest(unittest.TestCase):
         self.assertEqual(dep2.__class__, dep3.__class__)
 
 
-    def test_RegisterAndGetErrorSameNames(self):
-
-        appScope = scope.Scope()
-        try:
-            appScope.registerBean(Bean(Dependency2, name=Dependency3), Bean(Dependency3))
-            self.fail("Exception must thrown")
-        except ScopetonException as e:
-            pass
-
-
-
-
 if __name__ == "__main__":
     unittest.main()

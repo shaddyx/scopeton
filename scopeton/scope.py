@@ -1,74 +1,66 @@
-import inspect
-import logging
 from threading import RLock
 
 from scopeton import compat
 from scopeton.objects import Bean
-from scopeton.scopeTools import getBeanName, callMethodByName, ScopetonException
+from scopeton.qualifier_tree import QualifierTree
+from scopeton.scopeTools import getBean_qualifier, callMethodByName
 
 
 class Scope(object):
     '''this is servicelocator pattern implementation'''
-    def __init__(self, lock=False, initMethod="postConstruct", destroyMethod="preDestroy", parent=None, allowDuplicates=False):
-        self._singletons = {}  # type: dict[str, Bean]
-        self._beans = {}       # type: dict[str, Bean]
-        self.lock = lock       # type: RLock
-        self.allowDuplicates = allowDuplicates
+    def __init__(self, lock=False, initMethod="postConstruct", destroyMethod="preDestroy", parent=None):
+        self._singletons = QualifierTree()
+        self._beans = QualifierTree()
+        self.lock = lock or RLock()       # type: RLock
         self.initMethod = initMethod
         self.destroyMethod = destroyMethod
         self.parent = parent    #type: Scope
 
     def getInstance(self, name):
-        if self.lock:
-            self.lock.acquire()
+        self.lock.acquire()
         try:
-            return self._getInstance(getBeanName(name))
+            return self._getInstance(getBean_qualifier(name))
         finally:
-            if self.lock: self.lock.release()
+            self.lock.release()
 
-    def _getInstance(self, name):
-        name = getBeanName(name)
-        if name in self._singletons:
-            return self._singletons[name]
+    def _getInstance(self, qualifier):
 
-        if name not in self._beans:
-            raise Exception("Error, no such bean:" + str(name))
+        if self._singletons.contains(qualifier):
+            return self._singletons.find_by_qualifier_name(qualifier)
 
-        bean = self._beans[name]
+        bean = self._beans.find_by_qualifier_name(qualifier)
+
         if len(compat.getMethodSignature(bean.cls.__init__).args) == 2:
             instance = bean.cls(self)
         else:
             instance = bean.cls()
+
         if bean.singleton:
-            self.registerInstance(name, instance)
+            self.registerInstance(qualifier, instance)
+
         return instance
 
-    def registerInstance(self, name, instance):
-        self._singletons[name] = instance
+    def registerInstance(self, names, instance):
+        self._singletons.register(names, instance)
 
     def registerBean(self, *args):
-        if self.lock:
-            self.lock.acquire()
+        self.lock.acquire()
         try:
             for bean in args:
                 if not isinstance(bean, Bean):
                     bean = Bean(bean)
                 self._registerBean(bean)
         finally:
-            if self.lock: self.lock.release()
+            self.lock.release()
 
     def _registerBean(self, bean):
         """
         :type bean: Bean
         """
-        name = getBeanName(bean)
-        logging.debug("Registering:" + name)
-        if not self.allowDuplicates and bean.checkRegistered and name in self._beans:
-            raise ScopetonException("Error, bean with name {} already registered".format(name))
-        self._beans[getBeanName(bean)] = bean
+        for name in bean.qualifier_tree:
+            self._beans.register(name, bean)
 
     def runServices(self):
-        for k in self._beans:
-            bean = self._beans[k]
+        for bean in self._beans.get_all_objects():
             if bean.service:
                 callMethodByName(self.getInstance(bean), self.initMethod)
