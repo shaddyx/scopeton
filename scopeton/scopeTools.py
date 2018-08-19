@@ -24,7 +24,7 @@ def getClassTree(cls):
 
 def _getClassTree(cls):
     res = [cls]
-    if type(cls) is not object and cls.__bases__:
+    if type(cls) is not object and hasattr(cls, "__bases__") and cls.__bases__:
         res += flatten([_getClassTree(parent) for parent in cls.__bases__])
     return res
 
