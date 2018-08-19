@@ -2,7 +2,6 @@ import unittest
 
 from scopeton import scope
 from scopeton.objects import Bean
-from scopeton.scopeTools import ScopetonException
 
 
 class Dependency2(object):
@@ -30,8 +29,16 @@ class Dependency3(object):
     def testDecoratedSame(self):
         print("test called")
 
-
 class Dependency4(object):
+    pass
+
+class Dependency5(Dependency4):
+    pass
+
+class Dependency6(Dependency4):
+    pass
+
+class Dependency7(Dependency4, Dependency3):
     pass
 
 class ScopeTest(unittest.TestCase):
@@ -58,6 +65,26 @@ class ScopeTest(unittest.TestCase):
         dep3 = appScope.getInstance("aaa")
         self.assertNotEqual(dep2, dep3)
         self.assertEqual(dep2.__class__, dep3.__class__)
+
+    def test_Inheritance(self):
+        appScope = scope.Scope()
+        appScope.registerBean(
+            Bean(Dependency7)
+        )
+        dep3 = appScope.getInstance(Dependency4)
+        self.assertTrue(dep3, Dependency7)
+
+    def test_Inheritance_multi(self):
+        appScope = scope.Scope()
+        appScope.registerBean(
+            Bean(Dependency5),
+            Bean(Dependency7)
+        )
+        dep3 = appScope.getInstance(Dependency3)
+        self.assertTrue(dep3, Dependency7)
+
+        dep4 = appScope.getInstance(Dependency4)
+        self.assertTrue(dep3, Dependency7)
 
 
 if __name__ == "__main__":
