@@ -83,8 +83,21 @@ class ScopeTest(unittest.TestCase):
         dep3 = appScope.getInstance(Dependency3)
         self.assertTrue(dep3, Dependency7)
 
-        dep4 = appScope.getInstance(Dependency4)
+        dep4 = appScope.getInstance(Dependency5)
         self.assertTrue(dep3, Dependency7)
+
+    def test_Inheritance_err(self):
+        appScope = scope.Scope()
+        appScope.registerBean(
+            Bean(Dependency5),
+            Bean(Dependency7)
+        )
+        try:
+            dep4 = appScope.getInstance(Dependency4)
+            ok = False
+        except:
+            ok=True
+        self.assertTrue(ok)
 
 
 if __name__ == "__main__":

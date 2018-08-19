@@ -16,6 +16,8 @@ class Bean(object):
         self.service = service
         if not singleton and service:
             raise Exception("Error, cannot initialize service as non singleton")
-
-
+    def __repr__(self):
+        return str(self)
+    def __str__(self):
+        return "{self.__class__.__name__}[{self.qualifier_tree[0]}]".format(self=self)
 

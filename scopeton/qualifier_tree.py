@@ -1,3 +1,4 @@
+import logging
 import typing
 from threading import RLock
 
@@ -5,10 +6,15 @@ from scopeton.scopeTools import ScopetonException, flatten
 
 
 class _Wrapper:
-    def __init__(self, current_name, qualifier_names: typing.List[str], object):
+    def __init__(self, qualifier_names: typing.List[str], object):
         self.qualifier_names = qualifier_names
         self.object = object
-        self.current_name = current_name
+    def __hash__(self):
+        self.qualifier_names.__hash__() + self.object.__hash__()
+    def __str__(self):
+        return "{self.qualifier_names[0]}[{self.object}]".format(self=self)
+    def __repr__(self):
+        return str(self)
 
 class QualifierTree:
     def __init__(self):
@@ -20,7 +26,9 @@ class QualifierTree:
         try:
             if qualifier_name not in self._qualifiers:
                 self._qualifiers[qualifier_name] = []
-            self._qualifiers[qualifier_name].append(wrapper)
+            if wrapper not in self._qualifiers[qualifier_name]:
+                logging.debug("Registering: {}".format(wrapper))
+                self._qualifiers[qualifier_name].append(wrapper)
         finally:
             self.lock.release()
 
@@ -28,7 +36,7 @@ class QualifierTree:
         if isinstance(names, str):
             names = [names]
         for name in names:
-            self._register(name, _Wrapper(name, names, obj))
+            self._register(name, _Wrapper(names, obj))
 
     def contains(self, name):
         return name in self._qualifiers
