@@ -3,7 +3,7 @@ from threading import RLock
 from scopeton import compat
 from scopeton.objects import Bean
 from scopeton.qualifier_tree import QualifierTree
-from scopeton.scopeTools import getBean_qualifier, callMethodByName
+from scopeton.scopeTools import getBean_qualifier, callMethodByName, getClassTree, flatten
 
 
 class Scope(object):
@@ -41,6 +41,9 @@ class Scope(object):
         return instance
 
     def registerInstance(self, names, instance):
+        if not isinstance(names, list):
+            names = [names]
+        names = flatten([getClassTree(k) for k in names])
         self._singletons.register(names, instance)
 
     def registerBean(self, *args):

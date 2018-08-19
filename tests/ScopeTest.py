@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import Mock
 
 from scopeton import scope
 from scopeton.objects import Bean
@@ -65,6 +66,17 @@ class ScopeTest(unittest.TestCase):
         dep3 = appScope.getInstance("aaa")
         self.assertNotEqual(dep2, dep3)
         self.assertEqual(dep2.__class__, dep3.__class__)
+
+    def test_mock(self):
+        appScope = scope.Scope()
+        appScope.registerBean(
+            Bean(Mock(Dependency7), name=Dependency7)
+        )
+
+        appScope = scope.Scope()
+        appScope.registerInstance(
+            Dependency7, Mock(Dependency7)
+        )
 
     def test_Inheritance(self):
         appScope = scope.Scope()

@@ -19,5 +19,6 @@ class Bean(object):
     def __repr__(self):
         return str(self)
     def __str__(self):
-        return "{self.__class__.__name__}[{self.qualifier_tree[0]}]".format(self=self)
+        name = self.__class__.__name__ if hasattr(self.__class__, "__name__") else str(self.__class__)
+        return "{name}[{self.qualifier_tree[0]}]".format(self=self, name=name)
 

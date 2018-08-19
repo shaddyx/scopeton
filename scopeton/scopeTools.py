@@ -7,9 +7,11 @@ def flatten(lst):
             res.append(el)
     return res
 
-def getClassTreeQualifiers(cls):
-    return [getBean_qualifier(k.__name__) for k in getClassTree(cls)]
+def getClassName(cls):
+    return cls.__name__ if hasattr(cls, "__name__") else str(cls)
 
+def getClassTreeQualifiers(cls):
+    return [getBean_qualifier(k) for k in getClassTree(cls)]
 
 def rmDups(lst):
     res = []
@@ -34,6 +36,8 @@ def getBean_qualifier(bean):
     from scopeton.objects import Bean
     if isinstance(bean, Bean):
         return bean.qualifier_tree[0]
+    if not hasattr(bean, "__name__"):
+        return str(bean)
     return bean.__name__
 
 def callMethodByName(obj, name, *args, **kwargs):
