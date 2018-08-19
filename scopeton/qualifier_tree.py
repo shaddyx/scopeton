@@ -10,7 +10,9 @@ class _Wrapper:
         self.qualifier_names = qualifier_names
         self.object = object
     def __hash__(self):
-        self.qualifier_names.__hash__() + self.object.__hash__()
+        return hash(self.qualifier_names) + hash(self.object)
+    def __eq__(self, other):
+        return self.qualifier_names == other.qualifier_names and self.object == other.object
     def __str__(self):
         return "{self.qualifier_names[0]}[{self.object}]".format(self=self)
     def __repr__(self):

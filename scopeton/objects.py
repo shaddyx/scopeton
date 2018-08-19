@@ -16,6 +16,14 @@ class Bean(object):
         self.service = service
         if not singleton and service:
             raise Exception("Error, cannot initialize service as non singleton")
+
+    def __hash__(self):
+        return hash(self.cls)
+
+    def __eq__(self, other):
+        return self.cls == other.cls
+
+
     def __repr__(self):
         return str(self)
     def __str__(self):

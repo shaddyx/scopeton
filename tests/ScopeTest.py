@@ -67,6 +67,14 @@ class ScopeTest(unittest.TestCase):
         self.assertNotEqual(dep2, dep3)
         self.assertEqual(dep2.__class__, dep3.__class__)
 
+    def test_same(self):
+        appScope = scope.Scope()
+        appScope.registerBean(
+            Bean(Dependency7),
+            Bean(Dependency7)
+        )
+        appScope.getInstance(Dependency7)
+
     def test_mock(self):
         appScope = scope.Scope()
         appScope.registerBean(
