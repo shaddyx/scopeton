@@ -17,11 +17,8 @@ class Scope(object):
         self.parent = parent    #type: Scope
 
     def getInstance(self, name):
-        self.lock.acquire()
-        try:
+        with self.lock:
             return self._getInstance(getBean_qualifier(name))
-        finally:
-            self.lock.release()
 
     def _getInstance(self, qualifier):
 
@@ -47,14 +44,11 @@ class Scope(object):
         self._singletons.register(names, instance)
 
     def registerBean(self, *args):
-        self.lock.acquire()
-        try:
+        with self.lock:
             for bean in args:
                 if not isinstance(bean, Bean):
                     bean = Bean(bean)
                 self._registerBean(bean)
-        finally:
-            self.lock.release()
 
     def _registerBean(self, bean):
         """

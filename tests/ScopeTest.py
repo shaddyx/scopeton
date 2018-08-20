@@ -75,6 +75,17 @@ class ScopeTest(unittest.TestCase):
         )
         appScope.getInstance(Dependency7)
 
+
+    def test_register_instance(self):
+        appScope = scope.Scope()
+        appScope.registerBean(
+            Bean(Dependency7)
+        )
+        a = appScope.getInstance(Dependency7)
+        b = appScope.getInstance(Dependency4)
+        self.assertEqual(a, b)
+
+
     def test_mock(self):
         appScope = scope.Scope()
         appScope.registerBean(
