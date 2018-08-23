@@ -1,9 +1,7 @@
 import unittest
 
-from scopeton import scope, scopeTools
-from scopeton.objects import Bean
 from scopeton.qualifier_tree import QualifierTree
-from scopeton.scopeTools import getBean_qualifier, callMethodByName, ScopetonException
+from scopeton.scopeTools import ScopetonException
 
 
 class ScopeTest(unittest.TestCase):
@@ -44,6 +42,20 @@ class ScopeTest(unittest.TestCase):
         res = sorted(tree.get_all_objects())
         self.assertEqual([1, 2], res)
 
+    def test_find_qualifiers(self):
+        tree = QualifierTree()
+        tree.register(["aaa", "bbb", "ccc", "eee"], 1)
+        tree.register(["aaa", "bbb", "ddd"], 2)
+        res = tree.find_qualifiers(1)
+        self.assertEqual(["aaa", "bbb", "ccc", "eee"], res)
+
+    def test_find_suitable_qualifier(self):
+        tree = QualifierTree()
+        tree.register(["aaa", "bbb", "ccc", "eee", "zzz", "kkkk"], 1)
+        tree.register("aaa", 1)
+        tree.register(["aaa", "bbb", "ddd", "yyy", "rrr", "zzz", "kkkk"], 2)
+        res = tree.find_suitable_object("eee")
+        print("Result is:{}".format(res))
 
 
 if __name__ == "__main__":
