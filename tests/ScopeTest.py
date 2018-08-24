@@ -47,7 +47,7 @@ class Dependency7(Dependency4, Dependency3):
 class ScopeTest(unittest.TestCase):
 
     def setUp(self):
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(level=logging.DEBUG)
 
     def test_RegisterAndGetInstance(self):
         appScope = scope.Scope()

@@ -58,7 +58,7 @@ class Scope(object):
         :type bean: Bean
         """
         for name in bean.qualifier_tree:
-            logging.info("Registering: {} as {}".format(name, bean))
+            logging.debug("Registering: {} as {}".format(name, bean))
             self._beans.register(name, bean)
 
     def runServices(self):
