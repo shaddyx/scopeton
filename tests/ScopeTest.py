@@ -1,10 +1,12 @@
+import logging
 import unittest
 from unittest.mock import Mock
 
 from scopeton import scope
 from scopeton.objects import Bean
 
-
+class Dependency1(object):
+    pass
 class Dependency2(object):
     def __init__(self, context):
         self.context = context
@@ -44,6 +46,9 @@ class Dependency7(Dependency4, Dependency3):
 
 class ScopeTest(unittest.TestCase):
 
+    def setUp(self):
+        logging.basicConfig(level=logging.INFO)
+
     def test_RegisterAndGetInstance(self):
         appScope = scope.Scope()
         appScope.registerBean(Bean(Dependency2), Bean(Dependency3))
@@ -60,12 +65,12 @@ class ScopeTest(unittest.TestCase):
 
     def test_RegisterAndGetInstanceCustomNames(self):
         appScope = scope.Scope()
-        appScope.registerBean(Bean(Dependency4, name=Dependency3), Bean(Dependency4, name="aaa"))
+        appScope.registerBean(Bean(Dependency1, name=Dependency3), Bean(Dependency4, name="aaa"))
 
-        dep2 = appScope.getInstance(Dependency3)  # type: Dependency4
+        dep2 = appScope.getInstance(Dependency3)  # type: Dependency2
         dep3 = appScope.getInstance("aaa")
         self.assertNotEqual(dep2, dep3)
-        self.assertEqual(dep2.__class__, dep3.__class__)
+        self.assertEqual(Dependency1, dep2.__class__)
 
     def test_same(self):
         appScope = scope.Scope()

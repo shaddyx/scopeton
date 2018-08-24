@@ -44,9 +44,11 @@ class QualifierTree:
     def get_qualifier_tree_length(self, obj):
         return len(self.find_qualifiers(obj))
 
-    def find_suitable_object(self, qualifier):
-        print("self._qualifiersMap:{}".format(self._qualifiersMap))
-        print("self._qualifiers:{}".format(self._qualifiers))
+    def find_suitable_qualifier(self, qualifier):
+        #logging.debug("self._qualifiersMap:{}".format(self._qualifiersMap))
+        #logging.debug("self._qualifiers:{}".format(self._qualifiers))
+        if qualifier not in self._qualifiers:
+            return qualifier
         objects = self._qualifiers[qualifier]
         if len(objects) > 1:
             raise Exception("expected 1 object for qualifier:{}, but got {}: {}".format(qualifier, len(objects), objects))

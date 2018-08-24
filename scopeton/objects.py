@@ -10,7 +10,7 @@ class Bean(object):
         if name:
             name = getBean_qualifier(name)
             if name not in self.qualifier_tree:
-                self.qualifier_tree.insert(0, name)
+                self.qualifier_tree.append(name)
         self.lazy = lazy
         self.singleton = singleton
         self.service = service
@@ -28,5 +28,5 @@ class Bean(object):
         return str(self)
     def __str__(self):
         name = self.__class__.__name__ if hasattr(self.__class__, "__name__") else str(self.__class__)
-        return "{name}[{self.qualifier_tree[0]}]".format(self=self, name=name)
+        return "{name}[{qualifier}]".format(self=self, name=name, qualifier=self.qualifier_tree[-1])
 

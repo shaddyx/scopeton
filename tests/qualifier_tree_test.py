@@ -53,9 +53,11 @@ class ScopeTest(unittest.TestCase):
         tree = QualifierTree()
         tree.register(["aaa", "bbb", "ccc", "eee", "zzz", "kkkk"], 1)
         tree.register("aaa", 1)
-        tree.register(["aaa", "bbb", "ddd", "yyy", "rrr", "zzz", "kkkk"], 2)
-        res = tree.find_suitable_object("eee")
-        print("Result is:{}".format(res))
+        tree.register(["aaa", "bbb", "ddd", "yyy", "rrr", "zzz", "kkk"], 2)
+        res = tree.find_suitable_qualifier("eee")
+        self.assertEqual("kkkk", res)
+        res = tree.find_suitable_qualifier("rrr")
+        self.assertEqual("kkk", res)
 
 
 if __name__ == "__main__":

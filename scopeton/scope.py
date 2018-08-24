@@ -1,3 +1,4 @@
+import logging
 from threading import RLock
 
 from scopeton import compat
@@ -22,10 +23,12 @@ class Scope(object):
 
     def _getInstance(self, qualifier):
 
-        if self._singletons.contains(qualifier):
-            return self._singletons.find_by_qualifier_name(qualifier)
+        suitableQualifier = self._beans.find_suitable_qualifier(qualifier)
 
-        bean = self._beans.find_by_qualifier_name(qualifier)
+        if self._singletons.contains(suitableQualifier):
+            return self._singletons.find_by_qualifier_name(suitableQualifier)
+
+        bean = self._beans.find_by_qualifier_name(suitableQualifier)
 
         if len(compat.getMethodSignature(bean.cls.__init__).args) == 2:
             instance = bean.cls(self)
@@ -33,15 +36,15 @@ class Scope(object):
             instance = bean.cls()
 
         if bean.singleton:
-            self.registerInstance(qualifier, instance)
+            self.registerInstance(suitableQualifier, instance)
 
         return instance
 
-    def registerInstance(self, names, instance):
-        if not isinstance(names, list):
-            names = [names]
-        names = flatten([getClassTree(k) for k in names])
-        self._singletons.register(names, instance)
+    def registerInstance(self, name, instance):
+        qualifier = getBean_qualifier(name)
+        suitableQualifier = self._beans.find_suitable_qualifier(qualifier)
+        logging.debug("Suitable qualifier for {} is: {}".format(qualifier, suitableQualifier))
+        self._singletons.register(suitableQualifier, instance)
 
     def registerBean(self, *args):
         with self.lock:
@@ -55,6 +58,7 @@ class Scope(object):
         :type bean: Bean
         """
         for name in bean.qualifier_tree:
+            logging.info("Registering: {} as {}".format(name, bean))
             self._beans.register(name, bean)
 
     def runServices(self):

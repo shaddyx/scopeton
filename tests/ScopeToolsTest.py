@@ -47,11 +47,11 @@ class ScopeTest(unittest.TestCase):
     def test_getClassesTree(self):
         res = scopeTools.getClassTree(Cls5)
         res = [k.__name__ for k in res]
-        self.assertEqual(['Cls5', 'Cls4', 'Cls3', 'Cls2', 'Cls1', 'object'] , res)
+        self.assertEqual(['object', 'Cls1', 'Cls2', 'Cls3', 'Cls4', 'Cls5'] , res)
 
     def test_getClassesTree(self):
         res = scopeTools.getClassTreeQualifiers(Cls5)
-        self.assertEqual(['Cls5', 'Cls4', 'Cls3', 'Cls2', 'Cls1', 'object'] , res)
+        self.assertEqual(['object', 'Cls1', 'Cls2', 'Cls3', 'Cls4', 'Cls5'] , res)
 
 if __name__ == "__main__":
     unittest.main()

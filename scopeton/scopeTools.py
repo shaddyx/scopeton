@@ -11,7 +11,9 @@ def getClassName(cls):
     return cls.__name__ if hasattr(cls, "__name__") else str(cls)
 
 def getClassTreeQualifiers(cls):
-    return [getBean_qualifier(k) for k in getClassTree(cls)]
+    res = [getBean_qualifier(k) for k in getClassTree(cls)]
+    res.reverse()
+    return res
 
 def rmDups(lst):
     res = []
@@ -35,7 +37,7 @@ def getBean_qualifier(bean):
         return bean
     from scopeton.objects import Bean
     if isinstance(bean, Bean):
-        return bean.qualifier_tree[0]
+        return bean.qualifier_tree[-1]
     if not hasattr(bean, "__name__"):
         return str(bean)
     return bean.__name__
