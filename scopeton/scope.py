@@ -1,11 +1,14 @@
 import logging
 from threading import RLock
 
+import typing
+
 from scopeton import compat
 from scopeton.objects import Bean
 from scopeton.qualifier_tree import QualifierTree
 from scopeton.scopeTools import getBean_qualifier, callMethodByName, getClassTree, flatten
 
+T = typing.TypeVar("T")
 
 class Scope(object):
     '''this is servicelocator pattern implementation'''
@@ -17,7 +20,7 @@ class Scope(object):
         self.destroyMethod = destroyMethod
         self.parent = parent    #type: Scope
 
-    def getInstance(self, name):
+    def getInstance(self, name: T) -> T:
         with self.lock:
             return self._getInstance(getBean_qualifier(name))
 
