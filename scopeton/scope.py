@@ -3,10 +3,10 @@ from threading import RLock
 
 import typing
 
-from scopeton import compat
+from scopeton import compat, glob
 from scopeton.objects import Bean
 from scopeton.qualifier_tree import QualifierTree
-from scopeton.scopeTools import getBean_qualifier, callMethodByName, getClassTree, flatten
+from scopeton.scopeTools import getBean_qualifier, callMethodByName, getClassTree, flatten, ScopetonException
 
 T = typing.TypeVar("T")
 
@@ -32,9 +32,13 @@ class Scope(object):
             return self._singletons.find_by_qualifier_name(suitableQualifier)
 
         bean = self._beans.find_by_qualifier_name(suitableQualifier)
-
-        if len(compat.getMethodSignature(bean.cls.__init__).args) == 2:
+        glob.lastScope = self
+        if compat.hasInject(bean.cls.__init__):
+            instance = bean.cls()
+        elif len(compat.getMethodSignature(bean.cls.__init__).args) == 2:
             instance = bean.cls(self)
+        elif len(compat.getMethodSignature(bean.cls.__init__).args) > 2:
+            raise ScopetonException("Invalid number of parameters for bean constructor, maybe @Inject() decorator forgotten: {}".format(compat.getMethodSignature(bean.cls.__init__).args))
         else:
             instance = bean.cls()
 

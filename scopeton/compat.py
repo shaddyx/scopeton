@@ -1,6 +1,9 @@
 import inspect
 import sys
 
+from scopeton import constants
+
+
 class _Python2NativeArgs:
     args = ['self']
 
@@ -33,3 +36,11 @@ def getMethodSignature(method):
             return inspect.getargspec(method)
         except TypeError:
             return _Python2NativeArgs()
+
+
+def hasInject(fn):
+    return hasattr(fn, constants.INJECT_FLAG)
+
+
+def isMethod(fn):
+    return inspect.ismethod(fn)
