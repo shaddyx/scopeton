@@ -19,6 +19,7 @@ class Scope(object):
         self.initMethod = initMethod
         self.destroyMethod = destroyMethod
         self.parent = parent    #type: Scope
+        self.registerInstance(self.__class__, self)
 
     def getInstance(self, name: T) -> T:
         with self.lock:
