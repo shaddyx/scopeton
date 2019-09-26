@@ -18,8 +18,12 @@ class Scope(object):
         self.lock = lock or RLock()       # type: RLock
         self.initMethod = initMethod
         self.destroyMethod = destroyMethod
-        self.parent = parent    #type: Scope
+        self.parent = parent  #type:  Scope
+        self.servicesStarted = False
+        self.children = []  # type: typing.List[Scope]
         self.registerInstance(self.__class__, self)
+        if parent:
+            parent.children.append(self)
 
     def getInstance(self, name: T) -> T:
         with self.lock:
@@ -61,6 +65,15 @@ class Scope(object):
                     bean = Bean(bean)
                 self._registerBean(bean)
 
+    def remove(self):
+        logging.debug("Removing scope: {}".format(self))
+        self.stopServices()
+        for k in self.children[:]:
+            k.remove()
+        if self.parent:
+            self.parent.children.remove(self)
+
+
     def _registerBean(self, bean):
         """
         :type bean: Bean
@@ -70,6 +83,20 @@ class Scope(object):
             self._beans.register(name, bean)
 
     def runServices(self):
-        for bean in self._beans.get_all_objects():
-            if bean.service:
-                callMethodByName(self.getInstance(bean), self.initMethod)
+        if not self.servicesStarted:
+            self.servicesStarted = True
+            for bean in self._beans.get_all_objects():
+                if bean.service:
+                    callMethodByName(self.getInstance(bean), self.initMethod)
+
+            for childScope in self.children:
+                childScope.runServices()
+
+    def stopServices(self):
+        if self.servicesStarted:
+            self.servicesStarted = False
+            for bean in self._beans.get_all_objects():
+                if bean.service:
+                    callMethodByName(self.getInstance(bean), self.destroyMethod)
+            for childScope in self.children:
+                childScope.stopServices()

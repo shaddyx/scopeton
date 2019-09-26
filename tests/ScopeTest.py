@@ -13,6 +13,7 @@ class Dependency2(object):
         self.dep3 = context.getInstance(Dependency3)
 
     called = False
+    preDestroyCalled = False
     def postConstruct(self):
         print("PostConstruct called")
         self.called = True
@@ -23,6 +24,9 @@ class Dependency2(object):
         print ("test called")
     def testDecoratedSame(self):
         print("test called")
+
+    def preDestroy(self):
+        self.preDestroyCalled = True
 
 class Dependency3(object):
     def test(self):
@@ -61,6 +65,9 @@ class ScopeTest(unittest.TestCase):
         self.assertEqual(dep2.dep3, dep3_single)
         self.assertTrue(isinstance(dep2, Dependency2))
         self.assertTrue(dep2.called)
+        self.assertFalse(dep2.preDestroyCalled)
+        appScope.stopServices()
+        self.assertTrue(dep2.preDestroyCalled)
 
 
     def test_RegisterAndGetInstanceCustomNames(self):

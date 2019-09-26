@@ -10,6 +10,8 @@ class _Python2NativeArgs:
 def isPython3():
     return sys.version_info.major >= 3
 
+def getMethods(instance):
+    return [k for k in inspect.getmembers(instance, predicate=inspect.ismethod)]
 
 def isClass(obj):
     if not isPython3():
