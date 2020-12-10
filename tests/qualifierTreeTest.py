@@ -11,24 +11,24 @@ class ScopeTest(unittest.TestCase):
         tree.register("aaa", 1)
         tree.register("bbb", 2)
         tree.register(["zzz", "bbb", "ccc"], 3)
-        res = tree.find_by_qualifier_name("aaa")
+        res = tree.find_one_by_qualifier_name("aaa")
         self.assertEqual(1, res)
-        self.assertEqual(3, tree.find_by_qualifier_name("zzz"))
-        self.assertEqual(3, tree.find_by_qualifier_name("ccc"))
+        self.assertEqual(3, tree.find_one_by_qualifier_name("zzz"))
+        self.assertEqual(3, tree.find_one_by_qualifier_name("ccc"))
 
     def test_register_multiple(self):
         tree = QualifierTree()
         tree.register(["aaa", "bbb", "ccc"], 1)
         tree.register(["aaa", "bbb", "ddd"], 2)
-        self.assertEqual(1, tree.find_by_qualifier_name("ccc"))
-        self.assertEqual(2, tree.find_by_qualifier_name("ddd"))
+        self.assertEqual(1, tree.find_one_by_qualifier_name("ccc"))
+        self.assertEqual(2, tree.find_one_by_qualifier_name("ddd"))
 
     def test_error(self):
         tree = QualifierTree()
         tree.register(["aaa", "bbb", "ddd"], 1)
         tree.register(["aaa", "bbb", "ddd"], 2)
         try:
-            self.assertEqual(2, tree.find_by_qualifier_name("ddd"))
+            self.assertEqual(2, tree.find_one_by_qualifier_name("ddd"))
             ok = False
         except ScopetonException:
             ok = True

@@ -142,6 +142,16 @@ class ScopeTest(unittest.TestCase):
             ok=True
         self.assertTrue(ok)
 
+    def test_find_instances(self):
+        appScope = scope.Scope()
+        appScope.registerBean(
+            Bean(Dependency5),
+            Bean(Dependency6)
+        )
+        res = appScope.getInstances(Dependency4)
+        assert len(res) == 2
+        assert isinstance(res[0], Dependency5)
+        assert isinstance(res[1], Dependency6)
 
 if __name__ == "__main__":
     unittest.main()

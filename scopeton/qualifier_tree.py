@@ -66,8 +66,15 @@ class QualifierTree:
     def find_by_qualifier_name(self, name):
         with self.lock:
             if name not in self._qualifiers:
+                return []
+            return self._qualifiers[name]
+
+    def find_one_by_qualifier_name(self, name):
+        with self.lock:
+            beans = self.find_by_qualifier_name(name)
+            if len(beans) == 0:
                 raise ScopetonException("Error, no such qualifier: {}".format(name))
-            if len(self._qualifiers[name]) > 1:
+            if len(beans) > 1:
                 raise ScopetonException("{} qualifier for name: {}, expected 1, objects: {}".format(len(self._qualifiers[name]), name, self._qualifiers[name]))
 
-            return self._qualifiers[name][0]
+            return beans[0]

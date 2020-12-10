@@ -29,14 +29,20 @@ class Scope(object):
         with self.lock:
             return self._getInstance(getBean_qualifier(name))
 
+    def getInstances(self, qualifier):
+        with self.lock:
+            beans = self._beans.find_by_qualifier_name(getBean_qualifier(qualifier))
+            beans = map(lambda x: self.getInstance(x), beans)
+            return list(beans)
+
     def _getInstance(self, qualifier):
 
         suitableQualifier = self._beans.find_suitable_qualifier(qualifier)
 
         if self._singletons.contains(suitableQualifier):
-            return self._singletons.find_by_qualifier_name(suitableQualifier)
+            return self._singletons.find_one_by_qualifier_name(suitableQualifier)
 
-        bean = self._beans.find_by_qualifier_name(suitableQualifier)
+        bean = self._beans.find_one_by_qualifier_name(suitableQualifier)
         glob.lastScope = self
         if compat.hasInject(bean.cls.__init__):
             instance = bean.cls()
@@ -100,3 +106,4 @@ class Scope(object):
                     callMethodByName(self.getInstance(bean), self.destroyMethod)
             for childScope in self.children:
                 childScope.stopServices()
+
