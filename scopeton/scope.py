@@ -29,7 +29,7 @@ class Scope(object):
         with self.lock:
             return self._getInstance(getBean_qualifier(name))
 
-    def getInstances(self, qualifier):
+    def getInstances(self, qualifier: T) -> typing.List[T]:
         with self.lock:
             beans = self._beans.find_by_qualifier_name(getBean_qualifier(qualifier))
             beans = map(lambda x: self.getInstance(x), beans)
