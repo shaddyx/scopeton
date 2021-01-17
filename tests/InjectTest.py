@@ -1,10 +1,8 @@
 import logging
 import unittest
-from unittest.mock import Mock
 
 from scopeton import scope
 from scopeton.decorators import Inject
-from scopeton.objects import Bean
 from scopeton.scopeTools import ScopetonException
 
 
