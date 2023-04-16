@@ -36,7 +36,6 @@ There are several ways how to get the instance of dependency from the scope:
 ```python
 from scopeton import scope
 from scopeton.decorators import Inject
-from scopeton.scopeTools import ScopetonException
 
 class Dependency1():
     pass
@@ -63,3 +62,43 @@ instance = appScope.getInstance(Dependency7)
 
 ```
 in this case the Dependency1 and Dependency4 will be injected automatically to the constructor of the Dependency7
+
+
+## Beans
+
+The default bean configuration 
+
+```python
+appScope.registerBean(Dependency1, Dependency2, Dependency3)
+```
+configures beans Dependency1, Dependency2, Dependency3
+with lazy = False, singleton=True, service = True
+
+overriding bean parameters:
+```python
+appScope.registerBean(Bean(Dependency1, singleton = False), Dependency2, Dependency3)
+```
+in this case Dependency1 will be non-singleton bean
+
+## Services
+All beans can have postConstruct and preDestroy functions, these functions will be called automatically:
+postConstruct will be called for each bean after 
+```python
+appScope.runServices()
+```
+and preDestroy will be called after 
+```python
+appScope.stopServices()
+```
+
+## Inject scope
+
+Each bean can inject the scope itself (avoiding circular dependencies)
+
+```python
+class Dependency():
+    @Inject()
+    def __init__(self, scope: Scope, a):
+        self
+```
+
