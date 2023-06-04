@@ -6,8 +6,11 @@ def Inject():
     def inject_decorator(fn):
         annotations_signature = compat.getMethodSignature(fn).annotations
         args_signature = compat.getMethodSignature(fn).args
-        # TODO: add exception description
-        def inject_wrapper(*args, **kwargs):
+        if fn.__name__ != '__init__':
+            setattr(fn, constants.INJECT_BEFORE, 1)
+            return fn
+
+        def inject_wrapper(*args, **kwags):
             scope = glob.lastScope
             nkwargs = {}
             nargs = [args[0]]

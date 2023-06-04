@@ -3,22 +3,24 @@ from threading import RLock
 
 import typing
 
-from scopeton import compat, glob
+from scopeton import compat, glob, constants
 from scopeton.objects import Bean
 from scopeton.qualifier_tree import QualifierTree
 from scopeton.scopeTools import getBean_qualifier, callMethodByName, getClassTree, flatten, ScopetonException
 
 T = typing.TypeVar("T")
 
+
 class Scope(object):
     '''this is servicelocator pattern implementation'''
+
     def __init__(self, lock=False, initMethod="postConstruct", destroyMethod="preDestroy", parent=None):
         self._singletons = QualifierTree()
         self._beans = QualifierTree()
-        self.lock = lock or RLock()       # type: RLock
+        self.lock = lock or RLock()  # type: RLock
         self.initMethod = initMethod
         self.destroyMethod = destroyMethod
-        self.parent = parent  #type:  Scope
+        self.parent = parent  # type:  Scope
         self.servicesStarted = False
         self.children = []  # type: typing.List[Scope]
         self.registerInstance(self.__class__, self)
@@ -49,12 +51,16 @@ class Scope(object):
         elif len(compat.getMethodSignature(bean.cls.__init__).args) == 2:
             instance = bean.cls(self)
         elif len(compat.getMethodSignature(bean.cls.__init__).args) > 2:
-            raise ScopetonException("Invalid number of parameters for bean constructor, maybe @Inject() decorator forgotten: {}".format(compat.getMethodSignature(bean.cls.__init__).args))
+            raise ScopetonException(
+                "Invalid number of parameters for bean constructor, maybe @Inject() decorator forgotten: {}".format(
+                    compat.getMethodSignature(bean.cls.__init__).args))
         else:
             instance = bean.cls()
 
         if bean.singleton:
             self.registerInstance(suitableQualifier, instance)
+
+        self._inject_injectables(instance)
 
         return instance
 
@@ -78,7 +84,6 @@ class Scope(object):
             k.remove()
         if self.parent:
             self.parent.children.remove(self)
-
 
     def _registerBean(self, bean):
         """
@@ -106,4 +111,20 @@ class Scope(object):
                     callMethodByName(self.getInstance(bean), self.destroyMethod)
             for childScope in self.children:
                 childScope.stopServices()
+
+    def _inject_injectables(self, instance):
+        for fn in compat.getMethods(instance):
+            if hasattr(fn[1], constants.INJECT_BEFORE):
+                annotations_signature = compat.getMethodSignature(fn[1]).annotations
+                args_signature = compat.getMethodSignature(fn[1]).args
+                nargs = []
+                for arg_name in args_signature:
+                    if arg_name == "self":
+                        continue
+                    if arg_name not in annotations_signature:
+                        raise ScopetonException("Not annotated inject argument: {}".format(arg_name))
+                    arg_type = annotations_signature[arg_name]
+                    arg_to_inject = self.getInstance(arg_type)
+                    nargs.append(arg_to_inject)
+                fn[1](*nargs)
 

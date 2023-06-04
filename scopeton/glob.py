@@ -1,1 +1,1 @@
-lastScope = None
+lastScope = None  # type: scopeton.scope.Scope

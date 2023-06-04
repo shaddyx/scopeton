@@ -76,7 +76,7 @@ class ScopeTest(unittest.TestCase):
         appScope = scope.Scope()
         appScope.registerBean(Bean(Dependency1, name=Dependency3), Bean(Dependency4, name="aaa"))
 
-        dep2 = appScope.getInstance(Dependency3)  # type: Dependency2
+        dep2 = appScope.getInstance(Dependency3)  # type: Dependency3
         dep3 = appScope.getInstance("aaa")
         self.assertNotEqual(dep2, dep3)
         self.assertEqual(Dependency1, dep2.__class__)
