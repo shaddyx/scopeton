@@ -45,7 +45,7 @@ class Dependency4():
 
 class Dependency5():
     @Inject()
-    def __init__(self, dep1: Dependency1, a):
+    def __init__(self, dep1: Dependency1, dep4: Dependency4):
         pass
 
 
@@ -98,7 +98,17 @@ Each bean can inject the scope itself (avoiding circular dependencies)
 ```python
 class Dependency():
     @Inject()
-    def __init__(self, scope: Scope, a):
+    def __init__(self, scope: Scope):
         self
 ```
 
+## Non constructor injection
+Scopeton can inject beans not only in constructor injection:
+
+```python
+class Dependency():
+    @Inject()
+    def some_method(self, dependency: DependencyBean):
+        self
+```
+In this case some_method will be called during bean creation and DependencyBean will be injected as a parameter 

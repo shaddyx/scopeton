@@ -3,7 +3,7 @@ from threading import RLock
 
 import typing
 
-from scopeton import compat, glob, constants
+from scopeton import compat, glob, constants, type_utils
 from scopeton.objects import Bean
 from scopeton.qualifier_tree import QualifierTree
 from scopeton.scopeTools import getBean_qualifier, callMethodByName, getClassTree, flatten, ScopetonException
@@ -28,6 +28,9 @@ class Scope(object):
             parent.children.append(self)
 
     def getInstance(self, name: typing.Type[T]) -> T:
+        if type_utils.is_collection(name):
+            args = type_utils.get_type_args(name)
+            return self.getInstances(typing.cast(typing.Type[T], args[0]))
         with self.lock:
             return self._getInstance(getBean_qualifier(name))
 
