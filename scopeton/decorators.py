@@ -1,4 +1,4 @@
-from scopeton import compat, glob, constants
+from scopeton import compat, glob, constants, scopeTools
 
 
 def Inject():
@@ -14,3 +14,9 @@ def Inject():
         return inject_wrapper
 
     return inject_decorator
+
+def PostConstruct():
+    def decorator(fn):
+        scopeTools.set_annotation(fn, constants.POST_CONSTRUCT, 1)
+        return fn
+    return decorator

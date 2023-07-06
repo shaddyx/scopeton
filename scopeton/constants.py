@@ -1,2 +1,5 @@
 TO_INJECT_FLAG= "__inject__"
 INJECTED = "__injected__"
+ANNOTATED = "__anno__"
+ANNOTATIONS = "__annotations__"
+POST_CONSTRUCT = "__post_construct__"

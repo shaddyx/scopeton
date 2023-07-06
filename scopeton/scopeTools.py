@@ -60,6 +60,22 @@ def get_injectables(instance):
     return [fn for fn in compat.get_methods(instance) if hasattr(fn, constants.TO_INJECT_FLAG)]
 
 
+def get_annotations(instance):
+    return {fn: getattr(fn, constants.ANNOTATED) for fn in compat.get_methods(instance) if hasattr(fn, constants.ANNOTATED)}
+
+
+def set_annotation(fn, name, value):
+    if not hasattr(fn, constants.ANNOTATED):
+        setattr(fn, constants.ANNOTATED, {})
+    annotations = getattr(fn, constants.ANNOTATED)
+    annotations[name] = value
+
+
+def get_methods_with_annotation(instance, name):
+    annotations = get_annotations(instance)
+    return [k for k in annotations if name in annotations[k]]
+
+
 class ScopetonException(Exception):
     def __init__(self, *args, **kwargs):
         super(Exception, self).__init__(*args, **kwargs)

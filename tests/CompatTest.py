@@ -1,6 +1,6 @@
 import unittest
 
-from scopeton import compat
+from scopeton import compat, scope
 
 
 class Dependency3(object):
@@ -14,10 +14,12 @@ class Dependency3(object):
 
 class CompatTest(unittest.TestCase):
 
-    def test_GetMethodClass(self):
+    def test_GetMethodInstance(self):
         instance = Dependency3()
         res = compat.get_method_instance(instance.test)
         self.assertEqual(instance, res)
+
+
 
 
 if __name__ == "__main__":
