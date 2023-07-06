@@ -67,6 +67,7 @@ class Scope(object):
         return instance
 
     def registerInstance(self, name, instance):
+        setattr(instance, constants.SCOPE_PARAMETER, self)
         qualifier = get_bean_qualifier(name)
         suitableQualifier = self._beans.find_suitable_qualifier(qualifier)
         logging.debug("Suitable qualifier for {} is: {}".format(qualifier, suitableQualifier))

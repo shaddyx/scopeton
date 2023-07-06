@@ -1,5 +1,6 @@
 import unittest
 
+import scopeton.scope
 from scopeton import scope, scope_tools
 from scopeton.decorators import Inject
 from scopeton.scope_tools import call_method_by_name, get_bean_qualifier
@@ -65,6 +66,12 @@ class ScopeTest(unittest.TestCase):
     def test_get_injectables(self):
         res = scope_tools.get_injectables(InjectableTestClass())
         self.assertEqual(1, len(res))
+
+    def test_get_scope(self):
+        s = scopeton.scope.Scope()
+        s.registerBean(Dependency2)
+        instance = s.getInstance(Dependency2)
+        self.assertEqual(s, scope_tools.get_scope_by_method_or_class(instance))
 
 
 if __name__ == "__main__":

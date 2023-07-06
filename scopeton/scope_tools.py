@@ -60,6 +60,15 @@ def get_injectables(instance):
     return [fn for fn in compat.get_methods(instance) if hasattr(fn, constants.TO_INJECT_FLAG)]
 
 
+def get_scope_by_method_or_class(target):
+    if compat.is_method(target):
+        target = compat.get_method_instance(target)
+    if not hasattr(target, constants.SCOPE_PARAMETER):
+        raise ScopetonException("No scope parameter: {} for instance {}".format(constants.SCOPE_PARAMETER, target))
+    return getattr(target, constants.SCOPE_PARAMETER)
+
+
+
 class ScopetonException(Exception):
     def __init__(self, *args, **kwargs):
         super(Exception, self).__init__(*args, **kwargs)
