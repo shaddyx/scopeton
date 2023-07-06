@@ -1,12 +1,11 @@
 import logging
+import typing
 from threading import RLock
 
-import typing
-
-from scopeton import compat, glob, constants, type_utils
+from scopeton import compat, glob, constants, type_utils, scopeTools
 from scopeton.objects import Bean
 from scopeton.qualifier_tree import QualifierTree
-from scopeton.scopeTools import getBean_qualifier, callMethodByName, getClassTree, flatten, ScopetonException
+from scopeton.scopeTools import get_bean_qualifier, call_method_by_name, ScopetonException
 
 T = typing.TypeVar("T")
 
@@ -30,48 +29,51 @@ class Scope(object):
     def getInstance(self, name: typing.Type[T]) -> T:
         if type_utils.is_collection(name):
             args = type_utils.get_type_args(name)
-            return self.getInstances(typing.cast(typing.Type[T], args[0]))
+            return self.get_instances(typing.cast(typing.Type[T], args[0]))
         with self.lock:
-            return self._getInstance(getBean_qualifier(name))
+            return self._get_instance(get_bean_qualifier(name))
 
-    def getInstances(self, qualifier: typing.Type[T]) -> typing.List[T]:
+    def get_instances(self, qualifier: typing.Type[T]) -> typing.List[T]:
         with self.lock:
-            beans = self._beans.find_by_qualifier_name(getBean_qualifier(qualifier))
+            beans = self._beans.find_by_qualifier_name(get_bean_qualifier(qualifier))
             beans = map(lambda x: self.getInstance(x), beans)
             return list(beans)
 
-    def _getInstance(self, qualifier):
+    def _get_instance(self, qualifier):
 
-        suitableQualifier = self._beans.find_suitable_qualifier(qualifier)
+        suitable_qualifier = self._beans.find_suitable_qualifier(qualifier)
 
-        if self._singletons.contains(suitableQualifier):
-            return self._singletons.find_one_by_qualifier_name(suitableQualifier)
+        if self._singletons.contains(suitable_qualifier):
+            return self._singletons.find_one_by_qualifier_name(suitable_qualifier)
 
-        bean = self._beans.find_one_by_qualifier_name(suitableQualifier)
+        bean = self._beans.find_one_by_qualifier_name(suitable_qualifier)
         glob.lastScope = self
-        if compat.hasInject(bean.cls.__init__):
+
+        if hasattr(bean.cls.__init__, constants.TO_INJECT_FLAG):
+            # constructor injection
             instance = bean.cls()
-        elif len(compat.getMethodSignature(bean.cls.__init__).args) == 2:
+        elif len(compat.get_method_signature(bean.cls.__init__).args) == 2:
             instance = bean.cls(self)
-        elif len(compat.getMethodSignature(bean.cls.__init__).args) > 2:
+        elif len(compat.get_method_signature(bean.cls.__init__).args) > 2:
             raise ScopetonException(
                 "Invalid number of parameters for bean constructor, maybe @Inject() decorator forgotten: {}".format(
-                    compat.getMethodSignature(bean.cls.__init__).args))
+                    compat.get_method_signature(bean.cls.__init__).args))
         else:
             instance = bean.cls()
 
         if bean.singleton:
-            self.registerInstance(suitableQualifier, instance)
+            self.registerInstance(suitable_qualifier, instance)
 
         self._inject_injectables(instance)
 
         return instance
 
     def registerInstance(self, name, instance):
-        qualifier = getBean_qualifier(name)
+        qualifier = get_bean_qualifier(name)
         suitableQualifier = self._beans.find_suitable_qualifier(qualifier)
         logging.debug("Suitable qualifier for {} is: {}".format(qualifier, suitableQualifier))
         self._singletons.register(suitableQualifier, instance)
+        self._inject_injectables(instance)
 
     def registerBean(self, *args):
         with self.lock:
@@ -101,7 +103,7 @@ class Scope(object):
             self.servicesStarted = True
             for bean in self._beans.get_all_objects():
                 if bean.service:
-                    callMethodByName(self.getInstance(bean), self.initMethod)
+                    call_method_by_name(self.getInstance(bean), self.initMethod)
 
             for childScope in self.children:
                 childScope.runServices()
@@ -111,23 +113,26 @@ class Scope(object):
             self.servicesStarted = False
             for bean in self._beans.get_all_objects():
                 if bean.service:
-                    callMethodByName(self.getInstance(bean), self.destroyMethod)
+                    call_method_by_name(self.getInstance(bean), self.destroyMethod)
             for childScope in self.children:
                 childScope.stopServices()
 
     def _inject_injectables(self, instance):
-        for fn in compat.getMethods(instance):
-            if hasattr(fn[1], constants.INJECT_BEFORE):
-                annotations_signature = compat.getMethodSignature(fn[1]).annotations
-                args_signature = compat.getMethodSignature(fn[1]).args
-                nargs = []
-                for arg_name in args_signature:
-                    if arg_name == "self":
-                        continue
-                    if arg_name not in annotations_signature:
-                        raise ScopetonException("Not annotated inject argument: {}".format(arg_name))
-                    arg_type = annotations_signature[arg_name]
-                    arg_to_inject = self.getInstance(arg_type)
-                    nargs.append(arg_to_inject)
-                fn[1](*nargs)
+        if hasattr(instance, constants.INJECTED):
+            return
+        for fn in scopeTools.get_injectables(instance):
+            self._inject_method_args(fn)
+        setattr(instance, constants.INJECTED, 1)
 
+    def _inject_method_args(self, fn, add_self=None):
+        signature = compat.get_method_signature(fn)
+        nargs = []
+        if add_self is not None:
+            nargs.append(add_self)
+        for arg_name in signature.args:
+            if arg_name == "self":
+                continue
+            if arg_name not in signature.annotations:
+                raise ScopetonException("Not annotated inject argument: {}".format(arg_name))
+            nargs.append(self.getInstance(signature.annotations[arg_name]))
+        return fn(*nargs)

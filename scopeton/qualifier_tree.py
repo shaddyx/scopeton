@@ -11,19 +11,19 @@ class QualifierTree:
         self._qualifiersMap = {}  # type: dict[object, typing.List[str]]
         self.lock = RLock()
 
-    def _registerObj(self, qualifier_name: str, obj):
+    def _register_obj(self, qualifier_name: str, obj):
         with self.lock:
-            self._regOBjectByQualifier(qualifier_name, obj)
-            self._regQualifierByObject(qualifier_name, obj)
+            self._reg_object_by_qualifier(qualifier_name, obj)
+            self._reg_qualifier_by_object(qualifier_name, obj)
 
-    def _regOBjectByQualifier(self, qualifier_name, obj):
+    def _reg_object_by_qualifier(self, qualifier_name, obj):
         if qualifier_name not in self._qualifiers:
             self._qualifiers[qualifier_name] = []
         if obj not in self._qualifiers[qualifier_name]:
             logging.debug("Registering: {}".format(obj))
             self._qualifiers[qualifier_name].append(obj)
 
-    def _regQualifierByObject(self, qualifier_name, obj):
+    def _reg_qualifier_by_object(self, qualifier_name, obj):
         if obj not in self._qualifiersMap:
             self._qualifiersMap[obj] = []
         if qualifier_name not in self._qualifiersMap[obj]:
@@ -33,7 +33,7 @@ class QualifierTree:
         if isinstance(names, str):
             names = [names]
         for name in names:
-            self._registerObj(name, obj)
+            self._register_obj(name, obj)
 
     def find_qualifiers(self, obj):
         return self._qualifiersMap[obj]
@@ -45,8 +45,6 @@ class QualifierTree:
         return len(self.find_qualifiers(obj))
 
     def find_suitable_qualifier(self, qualifier):
-        #logging.debug("self._qualifiersMap:{}".format(self._qualifiersMap))
-        #logging.debug("self._qualifiers:{}".format(self._qualifiers))
         if qualifier not in self._qualifiers:
             return qualifier
         objects = self._qualifiers[qualifier]

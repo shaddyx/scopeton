@@ -1,2 +1,2 @@
-INJECT_FLAG="annotated_by_inject"
-INJECT_BEFORE="__inject_before__"
+TO_INJECT_FLAG= "__inject__"
+INJECTED = "__injected__"

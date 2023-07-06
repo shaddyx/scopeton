@@ -1,3 +1,6 @@
+from scopeton import compat, constants
+
+
 def flatten(lst):
     res = []
     for el in lst:
@@ -7,15 +10,18 @@ def flatten(lst):
             res.append(el)
     return res
 
-def getClassName(cls):
+
+def get_class_name(cls):
     return cls.__name__ if hasattr(cls, "__name__") else str(cls)
 
-def getClassTreeQualifiers(cls):
-    res = [getBean_qualifier(k) for k in getClassTree(cls)]
+
+def get_class_tree_qualifiers(cls):
+    res = [get_bean_qualifier(k) for k in get_class_tree(cls)]
     res.reverse()
     return res
 
-def rmDups(lst):
+
+def rm_dups(lst):
     res = []
     for k in lst:
         if k not in res:
@@ -23,16 +29,18 @@ def rmDups(lst):
     return res
 
 
-def getClassTree(cls):
-    return rmDups(_getClassTree(cls))
+def get_class_tree(cls):
+    return rm_dups(_get_class_tree(cls))
 
-def _getClassTree(cls):
+
+def _get_class_tree(cls):
     res = [cls]
     if type(cls) is not object and hasattr(cls, "__bases__") and cls.__bases__:
-        res += flatten([_getClassTree(parent) for parent in cls.__bases__])
+        res += flatten([_get_class_tree(parent) for parent in cls.__bases__])
     return res
 
-def getBean_qualifier(bean) -> str:
+
+def get_bean_qualifier(bean) -> str:
     if isinstance(bean, str):
         return bean
     from scopeton.objects import Bean
@@ -42,9 +50,14 @@ def getBean_qualifier(bean) -> str:
         return str(bean)
     return bean.__name__
 
-def callMethodByName(obj, name, *args, **kwargs):
+
+def call_method_by_name(obj, name, *args, **kwargs):
     if hasattr(obj, name):
         return getattr(obj, name)(*args, **kwargs)
+
+
+def get_injectables(instance):
+    return [fn for fn in compat.get_methods(instance) if hasattr(fn, constants.TO_INJECT_FLAG)]
 
 
 class ScopetonException(Exception):

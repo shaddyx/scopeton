@@ -5,8 +5,11 @@ from unittest.mock import Mock
 from scopeton import scope
 from scopeton.objects import Bean
 
+
 class Dependency1(object):
     pass
+
+
 class Dependency2(object):
     def __init__(self, context):
         self.context = context
@@ -14,41 +17,53 @@ class Dependency2(object):
 
     called = False
     preDestroyCalled = False
+
     def postConstruct(self):
         print("PostConstruct called")
         self.called = True
 
     def test(self):
-        print ("test called")
+        print("test called")
+
     def testDecorated(self):
-        print ("test called")
+        print("test called")
+
     def testDecoratedSame(self):
         print("test called")
 
     def preDestroy(self):
         self.preDestroyCalled = True
 
+
 class Dependency3(object):
     def test(self):
-        print ("test called")
+        print("test called")
+
     def testDecorated(self):
-        print ("test called")
+        print("test called")
+
     def testDecoratedSame(self):
         print("test called")
+
 
 class Dependency4(object):
     def a(self):
         pass
+
     pass
+
 
 class Dependency5(Dependency4):
     pass
 
+
 class Dependency6(Dependency4):
     pass
 
+
 class Dependency7(Dependency4, Dependency3):
     pass
+
 
 class ScopeTest(unittest.TestCase):
 
@@ -71,7 +86,6 @@ class ScopeTest(unittest.TestCase):
         appScope.stopServices()
         self.assertTrue(dep2.preDestroyCalled)
 
-
     def test_RegisterAndGetInstanceCustomNames(self):
         appScope = scope.Scope()
         appScope.registerBean(Bean(Dependency1, name=Dependency3), Bean(Dependency4, name="aaa"))
@@ -89,7 +103,6 @@ class ScopeTest(unittest.TestCase):
         )
         appScope.getInstance(Dependency7)
 
-
     def test_register_instance(self):
         appScope = scope.Scope()
         appScope.registerBean(
@@ -98,7 +111,6 @@ class ScopeTest(unittest.TestCase):
         a = appScope.getInstance(Dependency7)
         b = appScope.getInstance(Dependency4)
         self.assertEqual(a, b)
-
 
     def test_mock(self):
         appScope = scope.Scope()
@@ -141,7 +153,7 @@ class ScopeTest(unittest.TestCase):
             dep4 = appScope.getInstance(Dependency4)
             ok = False
         except:
-            ok=True
+            ok = True
         self.assertTrue(ok)
 
     def test_find_instances(self):
@@ -150,10 +162,11 @@ class ScopeTest(unittest.TestCase):
             Bean(Dependency5),
             Bean(Dependency6)
         )
-        res = appScope.getInstances(Dependency4)
+        res = appScope.get_instances(Dependency4)
         assert len(res) == 2
         assert isinstance(res[0], Dependency5)
         assert isinstance(res[1], Dependency6)
+
 
 if __name__ == "__main__":
     unittest.main()

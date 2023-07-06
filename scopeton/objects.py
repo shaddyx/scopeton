@@ -1,14 +1,14 @@
 from scopeton import scopeTools
-from scopeton.scopeTools import getBean_qualifier
+from scopeton.scopeTools import get_bean_qualifier
 
 
 class Bean(object):
     def __init__(self, cls, name=None, lazy = False, singleton=True, service = True, checkRegistered = True):
         self.checkRegistered = True
         self.cls = cls
-        self.qualifier_tree = scopeTools.getClassTreeQualifiers(cls)
+        self.qualifier_tree = scopeTools.get_class_tree_qualifiers(cls)
         if name:
-            name = getBean_qualifier(name)
+            name = get_bean_qualifier(name)
             if name not in self.qualifier_tree:
                 self.qualifier_tree.append(name)
         self.lazy = lazy

@@ -1,31 +1,16 @@
 from scopeton import compat, glob, constants
-from scopeton.scopeTools import ScopetonException
 
 
 def Inject():
     def inject_decorator(fn):
-        annotations_signature = compat.getMethodSignature(fn).annotations
-        args_signature = compat.getMethodSignature(fn).args
-        if fn.__name__ != '__init__':
-            setattr(fn, constants.INJECT_BEFORE, 1)
-            return fn
+        if fn.__name__ == '__init__':
+            # constructor injector
+            def inject_wrapper(*args, **kwags):
+                return glob.lastScope._inject_method_args(fn, args[0])
+        else:
+            inject_wrapper = fn
 
-        def inject_wrapper(*args, **kwags):
-            scope = glob.lastScope
-            nkwargs = {}
-            nargs = [args[0]]
-            for arg_name in args_signature:
-                if arg_name == "self":
-                    continue
-                if arg_name not in annotations_signature:
-                    raise ScopetonException("Not annotated inject argument: {}".format(arg_name))
-                arg_type = annotations_signature[arg_name]
-                arg_to_inject = scope.getInstance(arg_type)
-                nargs.append(arg_to_inject)
-
-            return fn(*nargs, **nkwargs)
-
-        setattr(inject_wrapper, constants.INJECT_FLAG, 1)
+        setattr(inject_wrapper, constants.TO_INJECT_FLAG, 1)
         return inject_wrapper
 
     return inject_decorator

@@ -6,8 +6,11 @@ from scopeton import scope
 from scopeton.decorators import Inject
 from scopeton.scopeTools import ScopetonException
 
+
 class Base:
     pass
+
+
 class Dependency1(Base):
     pass
 
@@ -45,11 +48,12 @@ class ScopeTest(unittest.TestCase):
 
     def setUp(self):
         logging.basicConfig(level=logging.DEBUG)
+
     def test_InjectManually(self):
         dep8 = Dependency8()
         dep8.inject_method(Dependency1())
         assert dep8.called
-        
+
     def test_RegisterAndGetInstance(self):
         app_scope = scope.Scope()
         app_scope.registerBean(Dependency1, Dependency4, Dependency5, Dependency7)
