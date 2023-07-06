@@ -2,8 +2,8 @@ import logging
 import unittest
 from unittest.mock import Mock
 
-from scopeton import scope, scopeTools, constants
-from scopeton.decorators import PostConstruct
+from scopeton import scope, scope_tools, constants
+from scopeton.decorators import PostConstruct, PreDestroy
 from scopeton.objects import Bean
 
 
@@ -33,6 +33,7 @@ class Dependency2(object):
     def testDecoratedSame(self):
         print("test called")
 
+    @PreDestroy()
     def preDestroy(self):
         self.preDestroyCalled = True
 
@@ -76,7 +77,6 @@ class ScopeTest(unittest.TestCase):
         appScope = scope.Scope()
         appScope.registerBean(Bean(Dependency2), Bean(Dependency3))
         dep2 = appScope.getInstance(Dependency2)  # type: Dependency2
-        res = scopeTools.get_methods_with_annotation(dep2, constants.POST_CONSTRUCT)
         dep3 = appScope.getInstance(Dependency3)
         dep3_single = appScope.getInstance(Dependency3)
         appScope.runServices()

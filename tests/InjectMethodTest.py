@@ -3,7 +3,7 @@ import unittest
 
 from scopeton import scope
 from scopeton.decorators import Inject
-from scopeton.scopeTools import ScopetonException
+from scopeton.scope_tools import ScopetonException
 
 
 class Dependency1:

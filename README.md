@@ -81,12 +81,12 @@ appScope.registerBean(Bean(Dependency1, singleton = False), Dependency2, Depende
 in this case Dependency1 will be non-singleton bean
 
 ## Services
-All beans can have postConstruct and preDestroy functions, these functions will be called automatically:
-postConstruct will be called for each bean after 
+All beans can have functions, annotated with @PostConstruct and/or PreDestroy decorators, these functions will be called automatically:
+@PostConstruct marked functions will be called for each bean after 
 ```python
 appScope.runServices()
 ```
-and preDestroy will be called after 
+and @PreDestroy marked will be called after 
 ```python
 appScope.stopServices()
 ```
@@ -96,6 +96,7 @@ appScope.stopServices()
 Each bean can inject the scope itself (avoiding circular dependencies)
 
 ```python
+from scopeton.decorators import Inject
 class Dependency():
     @Inject()
     def __init__(self, scope: Scope):
@@ -106,6 +107,7 @@ class Dependency():
 Scopeton can inject beans not only in constructor injection:
 
 ```python
+from scopeton.decorators import Inject
 class Dependency():
     @Inject()
     def some_method(self, dependency: DependencyBean):

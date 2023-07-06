@@ -1,7 +1,7 @@
 import unittest
 
 from scopeton.qualifier_tree import QualifierTree
-from scopeton.scopeTools import ScopetonException
+from scopeton.scope_tools import ScopetonException
 
 
 class ScopeTest(unittest.TestCase):

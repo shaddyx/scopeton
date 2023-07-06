@@ -2,7 +2,7 @@ import logging
 import typing
 from threading import RLock
 
-from scopeton.scopeTools import ScopetonException, flatten
+from scopeton.scope_tools import ScopetonException, flatten
 
 
 class QualifierTree:

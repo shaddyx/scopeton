@@ -2,10 +2,10 @@ import logging
 import typing
 from threading import RLock
 
-from scopeton import compat, glob, constants, type_utils, scopeTools
+from scopeton import compat, glob, constants, type_utils, scope_tools, annotation_tools
 from scopeton.objects import Bean
 from scopeton.qualifier_tree import QualifierTree
-from scopeton.scopeTools import get_bean_qualifier, call_method_by_name, ScopetonException
+from scopeton.scope_tools import get_bean_qualifier, ScopetonException
 
 T = typing.TypeVar("T")
 
@@ -13,12 +13,10 @@ T = typing.TypeVar("T")
 class Scope(object):
     '''this is servicelocator pattern implementation'''
 
-    def __init__(self, lock=False, initMethod="postConstruct", destroyMethod="preDestroy", parent=None):
+    def __init__(self, lock=False, parent=None):
         self._singletons = QualifierTree()
         self._beans = QualifierTree()
         self.lock = lock or RLock()  # type: RLock
-        self.initMethod = initMethod
-        self.destroyMethod = destroyMethod
         self.parent = parent  # type:  Scope
         self.servicesStarted = False
         self.children = []  # type: typing.List[Scope]
@@ -103,7 +101,10 @@ class Scope(object):
             self.servicesStarted = True
             for bean in self._beans.get_all_objects():
                 if bean.service:
-                    call_method_by_name(self.getInstance(bean), self.initMethod)
+                    instance = self.getInstance(bean)
+                    methods = annotation_tools.get_methods_with_annotation(instance, constants.POST_CONSTRUCT)
+                    for k in methods:
+                        self._inject_method_args(k)
 
             for childScope in self.children:
                 childScope.runServices()
@@ -113,14 +114,16 @@ class Scope(object):
             self.servicesStarted = False
             for bean in self._beans.get_all_objects():
                 if bean.service:
-                    call_method_by_name(self.getInstance(bean), self.destroyMethod)
+                    methods = annotation_tools.get_methods_with_annotation(self.getInstance(bean), constants.PRE_DESTROY)
+                    for k in methods:
+                        self._inject_method_args(k)
             for childScope in self.children:
                 childScope.stopServices()
 
     def _inject_injectables(self, instance):
         if hasattr(instance, constants.INJECTED):
             return
-        for fn in scopeTools.get_injectables(instance):
+        for fn in scope_tools.get_injectables(instance):
             self._inject_method_args(fn)
         setattr(instance, constants.INJECTED, 1)
 

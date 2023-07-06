@@ -52,3 +52,5 @@ def get_method_signature(method):
 
 def is_method(fn):
     return inspect.ismethod(fn)
+def is_function(fn):
+    return inspect.isfunction(fn)

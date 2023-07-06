@@ -1,8 +1,8 @@
 import unittest
 
-from scopeton import scope, scopeTools
+from scopeton import scope, scope_tools
 from scopeton.decorators import Inject
-from scopeton.scopeTools import call_method_by_name, get_bean_qualifier
+from scopeton.scope_tools import call_method_by_name, get_bean_qualifier
 
 
 class Cls1(object):
@@ -46,7 +46,7 @@ class ScopeTest(unittest.TestCase):
         self.assertEqual(dep2.called, "aaa")
 
     def test__flatten(self):
-        res = scopeTools.flatten([
+        res = scope_tools.flatten([
             [123, 234],
             567,
             [789, [9876, [4324]]]
@@ -59,11 +59,11 @@ class ScopeTest(unittest.TestCase):
         self.assertEqual(['object', 'Cls1', 'Cls2', 'Cls3', 'Cls4', 'Cls5'] , res)
 
     def test_getClassesTree(self):
-        res = scopeTools.get_class_tree_qualifiers(Cls5)
+        res = scope_tools.get_class_tree_qualifiers(Cls5)
         self.assertEqual(['object', 'Cls1', 'Cls2', 'Cls3', 'Cls4', 'Cls5'] , res)
 
     def test_get_injectables(self):
-        res = scopeTools.get_injectables(InjectableTestClass())
+        res = scope_tools.get_injectables(InjectableTestClass())
         self.assertEqual(1, len(res))
 
 
