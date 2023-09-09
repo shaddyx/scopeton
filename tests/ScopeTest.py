@@ -2,7 +2,7 @@ import logging
 import unittest
 from unittest.mock import Mock
 
-from scopeton import scope, scope_tools, constants
+from scopeton import scope
 from scopeton.decorators import PostConstruct, PreDestroy
 from scopeton.objects import Bean
 

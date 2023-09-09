@@ -1,8 +1,6 @@
 import inspect
 import sys
 
-from scopeton import constants
-
 
 class _Python2NativeArgs:
     args = ['self']

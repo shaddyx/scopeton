@@ -1,7 +1,7 @@
 import inspect
 import sys
 from datetime import datetime, timezone
-from typing import (Collection, Mapping, Optional, TypeVar, Any, Type, Tuple,
+from typing import (Collection, Mapping, Optional, Any, Type, Tuple,
                     Union)
 
 _NO_TYPE_ORIGIN = object()

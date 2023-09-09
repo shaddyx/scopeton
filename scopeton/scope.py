@@ -67,7 +67,7 @@ class Scope(object):
         return instance
 
     def registerInstance(self, name, instance):
-        setattr(instance, constants.SCOPE_PARAMETER, self)
+        scope_tools.set_instance_attr(instance, constants.SCOPE_PARAMETER, self)
         qualifier = get_bean_qualifier(name)
         suitableQualifier = self._beans.find_suitable_qualifier(qualifier)
         logging.debug("Suitable qualifier for {} is: {}".format(qualifier, suitableQualifier))
@@ -126,7 +126,7 @@ class Scope(object):
             return
         for fn in scope_tools.get_injectables(instance):
             self._inject_method_args(fn)
-        setattr(instance, constants.INJECTED, 1)
+        scope_tools.set_instance_attr(instance, constants.INJECTED, 1)
 
     def _inject_method_args(self, fn, add_self=None):
         signature = compat.get_method_signature(fn)

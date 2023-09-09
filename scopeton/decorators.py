@@ -1,4 +1,4 @@
-from scopeton import compat, glob, constants, scope_tools, annotation_tools
+from scopeton import glob, constants, annotation_tools
 
 
 def Inject():

@@ -1,7 +1,7 @@
 import unittest
 
 import scopeton.scope
-from scopeton import scope, scope_tools
+from scopeton import scope_tools
 from scopeton.decorators import Inject
 from scopeton.scope_tools import call_method_by_name, get_bean_qualifier
 
@@ -62,6 +62,12 @@ class ScopeTest(unittest.TestCase):
     def test_getClassesTree(self):
         res = scope_tools.get_class_tree_qualifiers(Cls5)
         self.assertEqual(['object', 'Cls1', 'Cls2', 'Cls3', 'Cls4', 'Cls5'] , res)
+
+    def test_is_primitive(self):
+        self.assertTrue(scope_tools.is_primitive(123))
+        self.assertFalse(scope_tools.is_primitive(Cls1()))
+
+
 
     def test_get_injectables(self):
         res = scope_tools.get_injectables(InjectableTestClass())

@@ -1,6 +1,6 @@
 import unittest
 
-from scopeton import compat, scope
+from scopeton import compat
 
 
 class Dependency3(object):

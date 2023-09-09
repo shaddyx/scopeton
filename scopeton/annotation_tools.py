@@ -1,4 +1,4 @@
-from scopeton import constants, compat, scope_tools
+from scopeton import constants, compat
 
 
 def get_annotations(instance):

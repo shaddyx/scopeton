@@ -68,7 +68,16 @@ def get_scope_by_method_or_class(target):
     return getattr(target, constants.SCOPE_PARAMETER)
 
 
-
 class ScopetonException(Exception):
     def __init__(self, *args, **kwargs):
         super(Exception, self).__init__(*args, **kwargs)
+
+
+def set_instance_attr(instance, attr, value):
+    if is_primitive(instance):
+        return
+    setattr(instance, attr, value)
+
+
+def is_primitive(obj):
+    return not hasattr(obj, '__dict__')

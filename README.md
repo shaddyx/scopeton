@@ -50,7 +50,6 @@ class Dependency5():
 
 
 class Dependency7():
-    called = False
     @Inject()
     def __init__(self, dep1:Dependency1, dep4: Dependency4):
         assert isinstance(dep1, Dependency1)
